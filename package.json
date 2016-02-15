@@ -1,0 +1,29 @@
+{
+  "name": "opac-nodejs",
+  "version": "0.1.0",
+  "description": "library Online Public Access Catalog wrote by nodejs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/carney520/opac-nodejs.git"
+  },
+  "keywords": [
+    "opac",
+    "library",
+    "management",
+    "node"
+  ],
+  "author": "carney lee",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/carney520/opac-nodejs/issues"
+  },
+  "homepage": "https://github.com/carney520/opac-nodejs#readme",
+  "dependencies": {
+    "express": "^4.13.4",
+    "mongoose": "^4.4.3"
+  }
+}
