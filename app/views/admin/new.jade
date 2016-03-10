@@ -1,0 +1,13 @@
+extends ../layouts/new_and_edit.jade
+block inputs
+  +input('姓名','name','text',name)(required)
+  +input('证件号','card_no','text',card_no)(required)
+  +select('角色','role',role,[{name:'图书管理员',value:'admin'},{name:'超级管理员',value:'super'}])
+  +input('e-mail','email','email',email)
+  +input('电话','tel','text',tel)
+  +input('手机','mobile','text',mobile)
+  +input('备注','notes','text',notes)
+  unless isEdit 
+    //密码需要加盐只能单独页面更改
+    +input('初始密码','password','text',password)
+      |初始密码(#[span.text-warning 默认的证件号])

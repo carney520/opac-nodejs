@@ -1,0 +1,44 @@
+extends ../layouts/list.jade
+block title
+  |所有借阅规则
+block table_head
+  +ths('图书类型','可借数','可借天数','可续借次数','续借天数','预约阈值','预约失效天数','创建时间','编辑')
+
+block table_body
+  each rule in rules
+    tr
+      td
+        a(href=url_for('rule',rule.id)) #{rule.name}
+      td #{rule.max_number_loan}
+      td #{rule.max_days_loan}
+      td #{rule.max_times_renewals}
+      td #{rule.max_days_renewals}
+      td #{rule.reservation_threshold}
+      td #{rule.reservation_expire}
+      td #{rule.created_at.toDateString()}
+      td
+        a(href=url_for('rule_edit',rule.id)) 编辑
+
+//-规则解析
+block methods
+  a.btn.btn-info(href=url_for('rule_new')) 新建图书类型
+//-补充
+block notes
+  .panel.panel-default
+    .panel-heading 选项说明
+    .panel-body
+      dl
+        dt 图书类型
+        dd 定义各种图书类型，比如中文图书、西文图书
+        dt 可借数
+        dd 该图书类型最多可借的册数
+        dt 可借天数
+        dd 该图书类型最多可借的天数
+        dt 可续借次数
+        dd 该图书类型最多续借的次数
+        dt 续借天数
+        dd 该图书类型续借的天数
+        dt 预约阈值
+        dd 该藏书低于某个阈值的时候可以进行预约
+        dt 预约失效天数
+        dd 预约图书到库，如果在指定天数没有被预约者借出，将预约将失效

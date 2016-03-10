@@ -1,0 +1,182 @@
+extends ../layouts/index.jade
+block meta
+  //uri 模板
+  -var usersTemplate = url_template_for('users','books');
+  meta(name='url-template',content=JSON.stringify(usersTemplate.templates))
+  meta(name='url-replacement',content=JSON.stringify(usersTemplate.replacements))
+  if is_reader
+    meta(name='user-id',content=user.card_no)
+block content
+  if is_reader
+    div.tab-container
+      ul.nav.nav-tabs
+        li.active
+          a(href='#home',data-toggle="tab") 主页
+        li
+          a#profile-tab(href='#profile',data-toggle="tab") 个人资料
+        li
+          a(href='#book_lent',data-toggle="tab") 借阅情况
+        li
+          a#favor-tab(href='#favorites',data-toggle="tab") 收藏
+        li
+          a#modify-tab(href='#modify',data-toggle="tab") 修改个人资料
+        li
+          a#change-password-tab(href='#change-password',data-toggle="tab") 修改密码
+
+      .tab-content
+        .tab-pane.active#home
+          +public
+        .tab-pane#profile.clearfix
+          .user-title.clearfix
+            .user-avatar
+              img.avatar(src=reader.avatar)
+            .user-title-body
+              h3 #{reader.name}
+                span.user-signature (#{reader.signature})
+              .user-introduce
+                |#{reader.introduce}
+          .user-profile
+            ul
+              li 证件号: #{reader.card_no}
+              li 邮箱: #{reader.email}
+              li 电话: #{reader.tel}
+              li 手机: #{reader.mobile}
+              li 备注: #{reader.notes}
+              li 账号余额: #{reader.amount}
+              li 创建时间: #{reader.created_at.getFullYear()}-#{reader.created_at.getMonth()+1}-#{reader.created_at.getDate()}
+              li 
+                a#goto-modify(href='#modify',data-toggle="tab") 修改个人资料
+              li 
+                a#goto-change-password(href='#change-password',data-toggle="tab") 修改密码
+                
+        .tab-pane#book_lent
+
+          //-图书收藏
+        .tab-pane#favorites
+          .tab-pane-title
+            |我的标签
+          .tags-container
+            each tag in reader.tags
+              span.user-tag 
+                a(href=url_for('user_tag',reader.card_no,tag)) #{tag}
+          .tab-pane-title
+            |我收藏的图书
+          .books-container
+            table.table
+              tbody
+                tr
+                  th 书名
+                  th 标签
+                  th 备注
+                  th 收藏时间
+            .next.hidden
+              |下一页
+            
+        .tab-pane#modify
+          .user-modify
+            form(action=url_for('user',reader.card_no)+'?_method=PUT',method='POST').form-horizontal.row
+              input(type='hidden',name='_csrf',value=csrfToken)
+              .col-md-3.modify-avatar
+                  img.avatar(src=reader.avatar)
+              .col-md-9
+                .form-group
+                  label.control-label.col-md-2(for="name") 姓名
+                  .col-md-10
+                    input.form-control#name(type='text',name='name',disabled,value=reader.name)
+
+                .form-group
+                  label.control-label.col-md-2(for="email") 邮箱
+                  .col-md-10
+                    input.form-control#email(type='email',name='email',value=reader.email)
+
+                .form-group
+                  label.control-label.col-md-2(for="tel") 电话
+                  .col-md-10
+                    input.form-control#tel(type='text',name='tel',value=reader.tel)
+
+                .form-group
+                  label.control-label.col-md-2(for="mobile") 手机
+                  .col-md-10
+                    input.form-control#mobile(type='text',name='mobile',value=reader.mobile)
+
+                .form-group
+                  label.control-label.col-md-2(for="signature") 签名
+                  .col-md-10
+                    input.form-control#signature(type='text',name='signature',value=reader.signature)
+                .form-group
+                  label.control-label.col-md-2(for="introduce") 简介
+                  .col-md-10
+                    textarea.form-control#introduce(name='introduce')
+                      |#{reader.introduce}
+                .form-group
+                  .col-md-4.col-md-offset-4
+                    button.btn(type='submit') 提交
+                  .col-md-4
+                    button.btn.backto-profile 返回
+
+        .tab-pane#change-password
+          .user-change-password
+            form.form-horizontal(action=url_for('user_password',reader.card_no)+'?_method=PUT',method='POST')
+              input(type='hidden',name='_csrf',value=csrfToken)
+              .form-group
+                label.control-label(for='old-password') 旧密码
+                input#old-password.form-control(type='password',name='old_password')
+              .form-group
+                label.control-label(for='new-password') 新密码
+                input#new-password.form-control(type='password',name='new_password')
+              .form-group
+                label.control-label(for='verify-password') 确认密码
+                input#verify-password.form-control(type='password',name='verify_password')
+              .form-group
+                .col-md-4.col-md-offset-1
+                  button.btn(type='submit') 提交
+                .col-md-4
+                  button.btn.backto-profile 返回
+  else
+    //-公共可访问的主页
+    +public
+
+mixin public
+  .user-title.clearfix
+    .user-avatar
+      img.avatar(src=reader.avatar)
+    .user-title-body
+      h3 #{reader.name}
+        span.user-signature (#{reader.signature})
+      .user-introduce
+        |#{reader.introduce}
+  .user-info
+    .panel.panel-default
+      .panel-heading 最近借过的书
+      .panel-body
+        //-TODO
+
+    .panel.panel-default
+      .panel-heading 最近的收藏
+      .panel-body
+        ul.user-info-list
+          each favor in favorites
+            li
+              .info-link
+                a(href=url_for('book',favor.book_id)) #{favor.name} 
+              .info-content
+                each tag in favor.tags
+                  .info-tag 
+                    a(href=url_for('book_search',{query:{tags:tag}})) #{tag}
+              .info-date #{getTimeval(favor.collection_date)}
+    .panel.panel-default
+      .panel-heading 最近参与的评论
+      .panel-body
+        ul.user-info-list
+          each comment in comments
+            li
+              .info-link 
+                a(href=url_for('book',comment.book_id))  #{comment.book_name}
+              .info-content #{comment.content.substr(0,50)}
+              .info-meta
+                .star.pull-left(class='star-'+comment.rank) 
+                span 赞#{comment.ups.length} 
+              .info-date #{getTimeval(comment.created_on)}
+
+block script
+  != js('user.js')

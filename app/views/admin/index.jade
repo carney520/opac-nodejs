@@ -1,0 +1,22 @@
+extends ../layouts/list.jade
+block title
+  |所有管理员
+block table_head
+  +ths('头像','姓名','证件号','角色','创建时间','备注','编辑')
+block table_body
+  each admin in admins
+    tr
+      td
+        a.thumbnail(href=url_for('admin',admin.card_no))
+          img(src=admin.avatar)/
+      td
+        a(href=url_for('admin',admin.card_no)) #{admin.name}
+      td: =admin.card_no
+      td: =admin.role
+      td: =admin.created_at.toDateString()
+      td: =admin.notes
+      td
+        a(href=url_for('admin_edit',admin.card_no)) 编辑
+
+block methods
+  a.btn.btn-info(href=url_for('admin_new')) 新建管理员

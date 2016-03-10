@@ -1,0 +1,113 @@
+extends ../layouts/list.jade
+include ./base.jade
+block title
+  if search_name
+    =search_name
+  else
+    |检索书目
+
+block content 
+  .panel.panel-default
+    .panel-heading
+      h4#search-title 书目检索
+    .panel-body
+      +simple_search
+      #search-results
+        if results
+          //检索提示
+          .search-description
+            |检索词: #{querywords} 结果数: #{total} 耗时: #{times} ms
+          table.table.table-striped.table-hover
+            tr
+              th #
+              th 书名
+              th 作者
+              th 出版社
+              th 出版年
+              th 索取号
+              th 状态
+              if is_admin || is_super
+                th 编辑
+            each result,index in results
+              tr
+                td: =index+1
+                td
+                  a(href=url_for('book',result.id)) #{result.name}
+                td.
+                  #{result.author && result.author.join(',')}
+                  译者:#{result.translator && result.translator.join(',')}
+                td: = result.publisher
+                td: = result.publication_year.getFullYear()
+                td: = result.call_no
+                td  #{result.availables}/#{result.holdings}
+                if is_admin || is_super
+                  //-如果是管理员，显示编辑按钮
+                  td
+                    a(href=url_for('intl_book_edit',result.id)) 编辑
+
+          //- 分页
+          nav.search-pagination
+            if pagination.moreThanOnePage()
+              ul.pagination.pagination-sm
+                //-prev
+                li(class=pagination.canPrev()? undefined : 'disabled')
+                  if pagination.canPrev()
+                    a(href=setSearchString('page',pagination.prev(),'total',total)) 上一页
+                  else
+                    a 上一页
+                each page in pagination.pages()
+                  li(class=page.active&&'active')
+                    if page === 'gap'
+                      a ...
+                    a(href=setSearchString('page',page.no,'total',total)): =page.no
+                //-next
+                li(class=pagination.canNext()? undefined : 'disabled')
+                  if pagination.canNext()
+                    a(href=setSearchString('page',pagination.next(),'total',total)) 下一页
+                  else
+                    a 下一页
+
+
+
+//-
+  @param {String} title 标题
+  @param {String} query_fieldname 用于构造查询字符串
+  @param {String} value_field 如果array 是对象数组，则需要传入value_field来获取对象的值
+  @param {String} count_field 同样，如果要在条目的旁边防止一个badget，则需要传入对应的属性值
+  @param {Array} array 一个数组
+
+mixin foldable_list(title,query_fieldname,value_field,count_field,array)
+  .foldable-list
+    .foldable-list-title.dropup
+      =title
+      span.caret
+    ul.foldable-list-body
+      if array
+        each item in array
+          if value_field
+            li.foldable-list-item
+              //-链接
+              if count_field
+                -var url=setSearchString(query_fieldname,item[value_field],'total',item[count_field])
+              a(href=url)
+                =item[value_field]
+              if count_field
+                span.badge: =item[count_field]
+          else
+            li.foldable-list-item
+              a(href=setSearchString(query_fieldname,item))
+                =item
+
+
+
+
+block sidebar
+  .panel.panel-default
+    .panel-heading 缩检
+    .panel-body
+      +foldable_list('分类','category','_id','count',categories)
+      +foldable_list('图书类型','type','_id','count',types)
+      +foldable_list('出版年','year','_id','count',years)
+      +foldable_list('标签','tags',null,null,tags)
+
+

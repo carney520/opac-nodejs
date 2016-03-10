@@ -1,0 +1,8 @@
+extends ../layouts/new_and_edit.jade
+block title
+  |新增馆藏
+
+block inputs
+  +select('馆藏位置','collection_site',collection_site,collection_sites)
+  +input('访问号(若空则系统自动生成)','accession_no','text',accession_no)
+  +select('状态','status',status,[{name:'空闲',value:'free'},{name:'借出',value:'lent_out'},{name:'预约',value:'reserved'}])

@@ -1,0 +1,32 @@
+doctype html
+html
+  head
+    //-meta
+    meta(charset="utf-8")/
+    meta(name='description',content=appDescription)/
+    meta(name='keywords',content=appKeyWords)/
+    meta(name='viewport',content="width=device-width,initial-scale=1")/
+    //-make sure that every Ajax request sends the CSRF token
+    meta(name='csrf-param',content='_csrf')
+    meta(name='csrf-token',content=csrfToken)
+    block meta
+    each val in siteHeaders
+      !=val
+    link(rel='icon',href=siteLogo,type='image/x-icon')/
+    //- css
+    != css('bootstrap.min.css')
+    != css('bootstrap-theme.min.css') 
+    != css('main.css')
+    title
+      block title
+        |#{appName}
+  body
+    block body
+    //-hidden
+    block hidden
+    != js('jquery.min.js')
+    != js('bootstrap.min.js')
+    != js('underscore-min.js')
+    != js('main.js')
+    block script
+

@@ -1,0 +1,30 @@
+extends ../layouts/show.jade
+block title
+  |读者资料-#{reader.name}
+block list
+  +item('姓名',reader.name)
+  +item('证件号',reader.card_no)
+  +item('状态')
+    span#reader-status #{reader.status}
+  +item('签名',reader.signature)
+  +item('简介',reader.introduce)
+  +item('邮件',reader.email)
+  +item('电话',reader.tel)
+  +item('手机',reader.mobile)
+  +item('备注',reader.notes)
+  +item('余额',reader.amount)
+  +item('创建时间',reader.created_at.toDateString())
+
+block sub-list
+  .thumbnail
+    img(src=reader.avatar)
+
+block methods
+  - var status = reader.status === 'logout' ? {name:'normal',value:'启用'} : {name:'logout',value:'禁用'}
+  +button_to('修改',url_for('reader_edit',reader.card_no))
+  +button_to(status.value,url_for('reader_status',reader.card_no),'danger')(id='reader-ban')
+  +button_to('删除',url_for('reader',reader.card_no),'danger')(id='delete-btn')
+  +button_to('返回',url_for('back'))
+
+block script
+  != js('reader.js')

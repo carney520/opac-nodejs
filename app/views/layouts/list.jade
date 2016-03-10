@@ -1,0 +1,23 @@
+//- 显示列表
+extends ./index.jade
+//- mixins
+//- 表格标题
+mixin ths(...items)
+  each item in items
+    th= item
+
+block content
+  table.table
+    tr
+      block table_head
+    block table_body
+
+block sidebar
+  .panel.panel-default
+    .panel-heading 操作
+    .panel-body
+      .btn-group-vertical
+        block methods
+  //-备注、信息说明
+  .notes
+    block notes

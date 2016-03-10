@@ -1,0 +1,172 @@
+extends ../layouts/index.jade
+block meta
+  //uri 模板
+  -var usersTemplate = url_template_for('users','books');
+  meta(name='url-template',content=JSON.stringify(usersTemplate.templates))
+  meta(name='url-replacement',content=JSON.stringify(usersTemplate.replacements))
+  meta(name='book-id',content=book.id)
+  meta(name='book-name',content=book.name)
+  meta(name='book-tags',content=book.tags.join(' '))
+  if is_reader
+    meta(name='user-id',content=user.card_no)
+block title
+  |图书详情:#{book.name}
+block content
+  .book-title
+    h2 
+      a(href=url_for('book',book.id)) #{book.name}
+  .row.clearfix
+    .col-md-2
+      .book-cover-here
+        img(src=book.cover)
+    .col-md-5
+      ul.book-info
+        li 作者:
+          each author,index in book.author
+            a(href=url_for('book_search',{query:{author:author}})) #{author}
+            =index+1 === book.author.length ? '' :', '
+        li 译者:
+          each translator,index in book.translator
+            a(href=url_for('book_search',{query:{translator:translator}})) #{translator}
+            =index+1 === book.translator.length ? '' :', '
+        li 出版社:
+          a(href=url_for('book_search',{query:{publisher:book.publisher}}))
+            =book.publisher
+        li 出版年: #{book.publication_year.getFullYear()}
+        li 页数: #{book.page_no}
+        li 定价: #{book.price}
+        li ISBN: #{book.isbn}
+        li 索引号: #{book.call_no}
+        li 语言: #{book.language}
+        li 图书类型: #{book.type}
+    .col-md-5
+      //-统计信息
+      .book-statistics
+        .book-statistics-item.book-star.clearfix
+          .star-title 评分
+          .star.pull-left(class='star-'+book.statistics_info.rate) 
+          .score.pull-left #{book.statistics_info.rate} 分
+        .book-statistics-item
+          .star-title 浏览数
+          .statistics-value #{viewed}
+        .book-statistics-item
+          .star-title 借出数
+          .statistics-value #{book.statistics_info.borrow_count}
+        .book-statistics-item
+          .star-title 收藏数
+          .statistics-value #{marked}
+        .book-statistics-item
+          .star-title 评论数
+          .statistics-value #{replied}
+  .book-item
+    .book-item-title
+      |图书简介
+    .book-item-body
+      p #{book.summary}
+
+  .book-item
+    .book-item-title
+      |目录
+    .book-item-body.foldable
+      !=book.contents
+
+  .book-item
+    .book-item-title
+      |馆藏情况
+    .book-item-body
+      if is_admin || is_super
+        .book-add-collection.pull-right
+          a.add-collection.link-button(href=url_for('collection_new',book.id)) 添加藏书
+      table.table.table-bordered
+        tr
+          th #
+          th 馆藏位置
+          th 访问号
+          th 状态(#{book.availables}/#{book.holdings})
+          if is_admin || is_super
+            th 编辑
+            th 删除
+        -var statusMap = {free:'空闲',lent_out:'借出',reserved:'预约'}
+        each collection,index in book.books
+          tr
+            td #{index+1}
+            td #{collection.collection_site}
+            td #{collection.accession_no}
+            td #{statusMap[collection.status]}
+            if is_admin || is_super
+              td 
+                a(href=url_for('collection_edit',book.id,collection.accession_no)) 编辑
+              td 
+                a.delete-btn(href=url_for('collection',book.id,collection.accession_no)) 删除
+
+  //-评论
+  .book-item
+    .book-item-title
+      |关于《#{book.name}》的评论
+    .book-item-body#book-comments
+      .comment-inputer
+        .comment-description
+        textarea#comment-content(name='comment-content')
+        //-评分
+        input(type='hidden',name='score',value='0')
+        input(type='hidden',name='reply_id',value='-1')
+        input(type='hidden',name='reply_user')
+        input(type='hidden',name='reply_userid')
+        .book-star.clearfix
+          .star-title.pull-left 评分
+          #dynamic-star.star.pull-left.star-0(data-value=0)
+            span.star-inner(data-value=1)
+            span.star-inner(data-value=2)
+            span.star-inner(data-value=3)
+            span.star-inner(data-value=4)
+            span.star-inner(data-value=5)
+          .score.pull-left 
+            span.star-score 0
+            | 分
+        button#add-comment.pull-right.btn.btn-sm.btn-primary 回复
+      .comment-list.clearfix
+        .comment-status
+          img.loading(src='/assets/loading.gif')
+          |正在加载评论列表
+
+block sidebar
+  .book-sub-item
+    .book-sub-item-title
+      |读者可操作项
+    .book-sub-item-body.clearfix
+      .book-btn 预约
+      .book-btn#favor 收藏
+      .book-btn 
+        a(href='#book-comments') 评价
+
+  .book-sub-item
+    .book-sub-item-title
+      |#{book.name}包含的标签
+    .book-sub-item-body
+      .book-tags
+        each tag in book.tags
+          span.book-tag-item 
+            a(href=url_for('book_search',{query:{tags:tag}})) #{tag}
+
+block hidden
+  #window.window-hidden
+    .window-message
+    .window-content
+    .window-footer
+      button.window-btn#window-confirm 确认
+      button.window-btn#window-cancel 取消
+
+  #tags-content.hidden
+    //-中英文的逗号不一样，使用空格减少复杂性
+    label.window-label(for='taginputer') 标签(空格分隔)
+    input#taginputer.window-input(type='text',name='tags')
+    #my-tags
+    label.window-label 推荐的标签
+    #recommend-tags
+    label.window-label(for='noteinputer') 备注
+    input#noteinputer.window-input(type='text',name='notes')
+
+block script
+  != js('runtime.js')
+  != js('templates.js')
+  != js('book.js')

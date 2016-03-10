@@ -1,0 +1,46 @@
+extends ./basic.jade
+block body
+  //-header
+  header.header
+    nav.navbar.navbar-default
+      .navbar-header
+        a.navbar-brand(src='/') OPAC
+      ul.nav.navbar-nav
+        //- 导航 TODO-嵌套
+        each nav in navs
+          li
+            a(href=nav.url) #{nav.name}
+      .navbar-user-status
+        unless logined
+          a#login_url.navbar-user-status-item(href=login_url) 登录
+        else
+          span#user-name.navbar-user-status-item.dropdownable #{user.name}
+          ul.navbar-user-status-list.drop-up
+            case user.role
+              when 'reader'
+                li
+                  a(href=url_for('user',user.card_no)) 个人主页
+            li 
+              a(href=logout_url) 退出
+            
+  //-main
+  main.container
+    //-显示flash信息
+    while message = flash.shift()
+      .alert(class="alert-#{message.type}") #{message.message}
+    .row
+      .col-md-9.main
+        block content
+          p hello world
+      .col-md-3.sidebar
+        block sidebar
+  //-footer
+  footer.footer
+    .copyright-info
+      span Copyright &copy;2016-#{year} opac-node 1.0 of #{organization}. All rights reserved
+      span 版权所有：#{organizationZh}. E-mail: #{email}
+    .footer-navs
+      a(href=url_for('main')) 首页
+      a(href='#') 网站索引
+      a(href='#') 帮助
+      a(href='#') 关于

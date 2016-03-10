@@ -23,7 +23,36 @@
   },
   "homepage": "https://github.com/carney520/opac-nodejs#readme",
   "dependencies": {
+    "bcryptjs": "^2.3.0",
+    "bluebird": "^3.3.3",
+    "body-parser": "^1.15.0",
+    "compression": "^1.6.1",
+    "connect-assets": "^5.1.0",
+    "cookie-parser": "^1.4.1",
+    "cookie-session": "^1.2.0",
+    "csurf": "^1.8.3",
+    "es6-promise": "^3.1.2",
     "express": "^4.13.4",
-    "mongoose": "^4.4.3"
+    "express-resource": "^1.0.0",
+    "flash": "^1.1.0",
+    "ioredis": "^1.15.1",
+    "jade": "^1.11.0",
+    "method-override": "^2.3.5",
+    "mongoose": "^4.4.3",
+    "morgan": "^1.6.1",
+    "multer": "^1.1.0",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0",
+    "pluralize": "^1.2.1",
+    "resourceful-acl": "^1.0.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "errorhandler": "^1.4.3",
+    "grunt": "^0.4.5",
+    "grunt-contrib-jade": "^1.0.0",
+    "grunt-contrib-watch": "^0.6.1",
+    "mocha": "^2.4.5",
+    "treeify": "^1.0.1"
   }
 }

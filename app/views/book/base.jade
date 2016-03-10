@@ -1,0 +1,91 @@
+mixin simple_search
+  #search-methods
+    form.form-horizontal(method="get",action=url_for('book_search'))
+      .form-group.form-group-sm
+        label.col-md-2.control-label(for='search-fields') 检索字段
+        .col-md-2
+          select#search-fields.form-control(name='field')
+            option(value='any',selected) 任意字段关键词
+            option(value='name') 按书目(前方一致)
+            option(value='author') 按作者(前方一致)
+            option(value='publisher') 按出版社(前方一致)
+            option(value='tags') 按标签
+            option(value='isbn') 按ISBN
+            option(value='call_no') 按索取号
+        .col-md-4
+          input.form-control(type='text',name='q',value=value,required)
+        .col-md-2
+          input.form-control(type='submit',name='search',value='检索')
+
+
+mixin advance_search
+  #advance-search
+    form.form-horizontal(action=url_for('book_search'),method='GET')
+      .form-group
+        label.control-label.col-md-2 书名
+        .col-md-4
+          input.form-control(type='text',name='name')
+        label.control-label.col-md-2 出版社
+        .col-md-4
+          input.form-control(type='text',name='publisher')
+
+      .form-group
+        label.control-label.col-md-2 作者
+        .col-md-4
+          input.form-control(type='text',name='author')
+        label.control-label.col-md-2 译者
+        .col-md-4
+          input.form-control(type='text',name='translator')
+
+      .form-group
+        label.control-label.col-md-2 ISBN
+        .col-md-4
+          input.form-control(type='text',name='isbn')
+        label.control-label.col-md-2 索引号
+        .col-md-4
+          input.form-control(type='text',name='call_no')
+
+      .form-group
+        label.control-label.col-md-2 年份(xxxx)
+        .col-md-4
+          input.form-control(type='Number',name='year')
+        label.control-label.col-md-2 图书类型
+        .col-md-4
+          select.form-control(name='type')
+            option(value='') 
+            each type in bookTypes
+              option(value=type) #{type}
+
+      .form-group
+        label.control-label.col-md-2 标签(按空格分隔)
+        .col-md-4
+          input#input-tags.form-control(type='text',name='tags')
+        label.control-label.col-md-2 分类
+        .col-md-4
+          input.form-control(type='text',name='category')
+
+      .form-group
+        label.control-label.col-md-2 语言
+        .col-md-4
+          input#input-tags.form-control(type='text',name='language')
+
+      .form-group
+        .col-md-12
+      .form-group
+        label.control-label.col-md-2 排序方式
+        .col-md-3
+          select.form-control(name='sort_key')
+            option(value='publication_year' selected) 年份
+            option(value='name') 书名
+            option(value='publisher') 出版社
+            option(value='entry_date') 进馆日期
+
+        label.control-label.col-md-2
+          input(type='radio',value='-1' name='sort_order' checked)
+          |降序
+        label.control-label.col-md-2
+          input(type='radio',value='1',name='sort_order')
+          |升序
+      .form-group
+        .col-md-2.col-md-offset-2
+          input.form-control(type='submit',value='提交')

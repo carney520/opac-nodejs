@@ -1,0 +1,19 @@
+extends ../layouts/show.jade
+block title
+  |管理员资料-#{admin.name}
+block list
+  +item('姓名',admin.name)
+  +item('证件号',admin.card_no)
+  +item('电话',admin.tel)
+  +item('手机',admin.mobile)
+  +item('邮箱',admin.email)
+  +item('角色',admin.role)
+  +item('备注',admin.notes)
+  +item('注册时间',admin.created_at.toDateString())
+block sub-list
+  .thumbnail
+    img(src=admin.avatar)
+
+block methods
+  +button_to('注销管理员',url_for('admin',admin.card_no),'danger')(id='delete-btn')
+  +button_to('返回',url_for('back'))

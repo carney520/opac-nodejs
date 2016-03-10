@@ -1,0 +1,36 @@
+//-用户登录界面
+//-参数 action_path 请求路径
+       role        角色
+
+extends ./layouts/basic.jade
+block title
+  |用户登录
+block body
+  .container
+    .login-panel
+      .login-logo-wrap
+        .login-logo OPAC
+      .login-welcome-speech
+        h3 登录OPAC
+      .login-alert
+        -var message = flash.shift()
+        if message
+          =message.message
+      form.login-form(action=action_path,method="POST")
+        input(type="hidden",name="_csrf",value=csrfToken)
+        input(type="hidden",name="role",value=role)
+        input(type="hidden",name="redirect_to",value=redirect_to)
+        .login-form-input
+          .input-group
+            .input-group-addon
+              span.glyphicon.glyphicon-user
+            input.form-control(type="text",name="username",value=username,placeholder='证件号或邮箱',required)
+
+        .login-form-input
+          .input-group
+            .input-group-addon
+              span.glyphicon.glyphicon-lock
+            input.form-control(type="password",name="password",placeholder='密码',required)
+
+        .login-form-button
+          input(type="submit",name="login",value="登录")

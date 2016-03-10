@@ -1,0 +1,15 @@
+extends ../layouts/show.jade
+block title
+  |馆藏位置-#{collection_site.name}
+
+block list
+  +item('借阅室名',collection_site.name)
+  +item('地址',collection_site.address)
+  +item('联系电话',collection_site.phone)
+  +item('管理员',collection_site.admin)
+
+block methods
+  +button_to('修改',url_for('collection_site_edit',collection_site.id))
+  +button_to('删除',url_for('collection_site',collection_site.id),'danger')(id='delete-btn')
+  +button_to('返回',url_for('back'))
+

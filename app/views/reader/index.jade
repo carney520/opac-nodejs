@@ -1,0 +1,23 @@
+extends ../layouts/list.jade
+block title
+  |所有读者
+block table_head
+  +ths('头像','姓名','证件号','状态','创建时间','备注','编辑')
+
+block table_body
+  each reader in readers
+    tr
+      td 
+        a.thumbnail(href=url_for('reader',reader.card_no))
+          img(src=reader.avatar)/
+      td 
+        a(href=url_for('reader',reader.card_no)) #{reader.name}
+      td #{reader.card_no}
+      td #{reader.status}
+      td #{reader.created_at.toDateString()}
+      td #{reader.notes}
+      td
+        a(href=url_for('reader_edit',reader.card_no)) 编辑
+
+block methods
+   a.btn.btn-info(href=url_for('reader_new')) 新建读者

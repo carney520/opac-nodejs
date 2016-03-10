@@ -1,0 +1,53 @@
+extends ../layouts/index.jade
+block meta
+  meta(name='url-template',content=JSON.stringify(url_template))
+  meta(name='url-replacement',content=JSON.stringify(url_replacement))
+block title
+  |图书分类管理
+
+block content
+  .panel.panel-default
+    .panel-heading
+      input.add-input.add-input-hidden(type=text,name='category')
+      button.add-btn#add-category(data-action=url_for('categories'),data-method='POST') 添加分类
+    .panel-body
+      table.table#categories-list(data-url=url_for('category','{id}'),data-replacement='{id}')
+        tr
+          th 主分类
+          th 子分类(双击删除)
+          th 删除
+          th 添加子分类
+          th 修改
+        each category in categories
+          tr.category-item(data-id=category.id)
+            td.category-name #{category.name}
+            td.sub-categories
+              //- 子分类
+              //-=category.children.join(',')
+              each child in category.children
+                span.category-child
+                  =child
+            td
+              button.btn.delete-category 删除
+            td
+              button.btn.add-child 添加子分类
+            td
+              button.btn.update-category 修改
+
+//- 模式框
+block hidden
+  #editor.modal.fade
+    .modal-dialog.modal-sm
+      .modal-content
+        .modal-header
+          button.close(type="button",data-dismiss="modal")
+          h4.modal-title Modal
+        .modal-body
+          p hello
+        .modal-footer
+          button.btn.btn-default(data-dismiss="modal") 取消
+          button#modal-ok.btn.btn-primary 确定
+
+block script
+  != js('category.js')
+

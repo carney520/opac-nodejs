@@ -1,0 +1,35 @@
+extends ./index.jade
+//- mixins
+  make one list item
+mixin item(name,value)
+  li.list-group-item&attributes(attributes) #{name} :  
+    if block
+      block
+    else
+      =value
+
+// make a button
+mixin button_to(name,url,type)
+  -type = type || 'info'
+  a.btn(class="btn-"+type,href=url)&attributes(attributes) 
+    if block
+      block
+    else
+      =name
+
+block content
+  .panel.panel-info
+    .panel-heading
+      h3.panel-title 
+        block title
+    .panel-body
+      .row
+        .col-md-10
+          ul.list-group
+            block list
+        .col-md-2
+          block sub-list
+
+block sidebar
+  .btn-group-vertical
+    block methods

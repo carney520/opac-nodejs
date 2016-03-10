@@ -1,0 +1,20 @@
+extends ../layouts/index.jade
+include ./base.jade
+block title
+  |书目检索
+block content
+  div.tab-container
+    ul.nav.nav-tabs
+      li.active
+        a(href='#simple-search',data-toggle="tab") 简单检索
+      li
+        a(href='#advance-search',data-toggle="tab") 高级检索
+
+    .tab-content
+      .tab-pane.active#simple-search
+        .search-content
+          +simple_search
+
+      .tab-pane#advance-search
+        .search-content
+          +advance_search

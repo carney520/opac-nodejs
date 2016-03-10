@@ -1,0 +1,10 @@
+extends ../layouts/new_and_edit.jade
+block inputs
+  +input('姓名','name','text',name)(required)
+  +input('证件号','card_no','text',card_no)(required)
+  +input('e-mail','email','email',email)
+  +input('电话','tel','text',tel)
+  +input('手机','mobile','text',mobile)
+  +input('备注','notes','text',notes)
+  unless isEdit
+    +input('初始密码(默认为证件号)','password','text',password)

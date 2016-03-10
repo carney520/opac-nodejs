@@ -1,0 +1,39 @@
+//-评论条目
+//Template.comment_item
+.comment-item.clearfix(data-user=username,data-userid=user_id,data-id=comment_id,id=comment_id,data-likes=likes)
+  .comment-avatar
+    img(src=avatar,alt=username)
+  .comment-item-header
+    .comment-id ##{comment_id}
+    .username
+      a.user(href=url_for_user) #{username}
+    .comment-date
+      |#{date.toDateString()}
+    if rank !== 0
+      .comment-star
+        .star.pull-left(class='star-'+rank)
+    //-回复按钮
+    .comment-reply.comment-icon
+      span.glyphicon.glyphicon-share-alt
+    //-赞按钮
+    .comment-agree.comment-icon(data-liked=liked)
+      span.glyphicon.glyphicon-thumbs-up
+      span.ups
+        if likes > 0
+          =likes
+        if liked
+          |取消赞
+    //-本人操作，显示删除按钮
+    if current_userid === user_id  
+      .comment-delete.comment-icon
+        span.glyphicon.glyphicon-remove
+      
+  .comment-item-body
+    if reply_id
+      .parent-id
+        回复: ##{reply_id}
+    if reply_username
+      .parent-username
+        a.user(href=url_for_reply_user) #{reply_username}
+    .comment-item-content
+      =content

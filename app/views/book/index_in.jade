@@ -1,0 +1,25 @@
+extends ../layouts/index.jade
+//导入公共组件
+include ./base.jade
+block title
+  |书目检索
+block content
+  .panel.panel-default
+    .panel-heading
+      h4#search-title 书目检索
+    .panel-body
+      +simple_search
+
+  .panel.panel-default
+    .panel-heading
+      h4#search-title 高级检索
+    .panel-body
+      +advance_search
+
+
+block sidebar
+  .panel.panel-default
+    .panel-heading 操作
+    .panel-body
+      .btn-group-vertical
+         a.btn.btn-info(href=url_for('intl_book_new')) 新建图书

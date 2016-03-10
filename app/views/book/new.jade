@@ -1,0 +1,51 @@
+extends ../layouts/new_and_edit.jade
+block inputs
+  +input('书名','name','text',name)(required)
+  +input('作者','author','text',author)(required)
+  +input('译者','translator','text',translator)
+  +input('出版社','publisher','text',publisher)(required)
+  +input('ISBN(13位)','isbn','text',isbn)(required)
+  +select('图书类型','type',type,bookTypes)(required)
+  +input('语言','language','text',language)(list='for-language',required)
+  +datalist('for-language',['中文','英文','日文','法文'])
+  +input('页数','page_no','number',page_no)
+  +input('出版年(xxxx)','publication_year','date',publication_year)
+  +input('价格','price','text',price)
+  +input('简介','summary','text',summary)
+  +textarea('目录','contents',contents)
+
+block sub-inputs
+  #cover-here
+    if cover
+      img.book-cover(src=cover||cover_url)
+
+  +select('一级分类','first_category',first_category,firstCategories)(required,data-categories=JSON.stringify(categories))
+  +select('二级分类','second_category',second_category)(required)
+  //-+input('分类号','category_no','text',category_no)
+  +input('索引号','call_no','text',call_no)
+  input(type='hidden',name='cover_url',value=cover_url)
+  +input('封面','cover-file','file')(accept='image/*')
+  //- 图书标签
+  #tags(title='双击删除')
+    .tags-container
+      if tags
+        each tag in tags
+          span.tag-item: =tag
+    .tags-adder
+      input#tag-inputer(type='text')
+      button#add-tag 添加标签
+  input(type='hidden',name='tags',value=tags && tags.join(','))
+  
+block sidebar
+ .panel.panel-default
+   .panel-heading
+     .input-group
+       input#douban-search-content.form-control(type='text',placeholder='试一下搜索豆瓣吧!')
+       span.input-group-btn
+         button#douban-search.btn.btn-default GO!
+   .panel-body#douban-results
+     #douban-total
+     #douban-items.list-group
+
+block script
+  != js('book.js')

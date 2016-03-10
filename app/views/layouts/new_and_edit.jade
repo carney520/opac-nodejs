@@ -1,0 +1,69 @@
+extends ./index.jade
+
+//- mixins
+//
+  label - 标签名
+  name  - 表单名
+  type  - 表单类型
+  value - 表单
+mixin input(label,name,type,value)
+  .form-group
+    label.control-label(for=name)
+      if block
+        block
+      else
+        =label
+    input.form-control(id=name,type=type,name=name,value=value)&attributes(attributes)
+
+mixin textarea(label,name,value)
+  .form-group
+    label.control-label(for=name)
+      if block
+        block
+      else
+        =label
+    textarea.form-control(name=name,id=name,value=value)&attributes(attributes)
+
+//
+  select(label,name,selected,values)
+  label - 标签名
+  name - 表单名
+  selected - 已选择项
+  values - 可选值列表
+mixin select(label,name,selected,values)
+  .form-group
+    label.control-label(for=name) 
+      if block
+        block
+      else
+        =label
+    select.form-control(id=name,name=name)&attributes(attributes)
+      if values
+        each value in values
+          option(value=value.value || value,selected= (selected === value.value) ? 'selected' : undefined) #{value.name || value}
+
+mixin datalist(id,list)
+  datalist(id=id)&attributes(attributes)
+   each item in list
+     option(label=item,value=item)
+
+
+block title
+  if isEdit
+    | 编辑#{resource} #{name}
+  else
+    | 新建#{resource}
+block content
+  //- form
+  form#main-form(action=isEdit ? '#{isEdit}?_method=PUT' : '#{action_path}',method='post',enctype=needUpload ? 'multipart/form-data' : undefined)
+    .row
+      .col-md-9
+        //- csrf token
+        input(type='hidden',name='_csrf',value=csrfToken)
+        block inputs
+        input.btn.btn-default(type='submit',name='submit',value='提交')
+      .col-md-3
+        block sub-inputs
+
+
+

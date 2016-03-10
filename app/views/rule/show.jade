@@ -1,0 +1,17 @@
+extends ../layouts/show.jade
+block title
+  |图书类型详情-#{rule.name}
+block list
+  +item('名字',rule.name)
+  +item('可借数',rule.max_number_loan)
+  +item('可借天数',rule.max_days_loan)
+  +item('可续借次数',rule.max_times_renewals)
+  +item('可续借天数',rule.max_days_renewals)
+  +item('预约阈值',rule.reservation_threshold)
+  +item('预约失效天数',rule.reservation_expire)
+
+block methods
+  +button_to('修改',url_for('rule_edit',rule.id))
+  +button_to('删除',url_for('rule',rule.id),'danger')(id='delete-btn')
+  +button_to('返回',url_for('back'))
+

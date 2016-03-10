@@ -1,0 +1,46 @@
+extends ../layouts/new_and_edit.jade
+block inputs
+  .form-group
+    label(for='name') 图书类型
+    input.form-control#name(type='text',name='name',placeholder='图书类型',required,value=name)
+  .form-group
+    label(for='max_number_loan') 可借数
+    input.form-control#max_number_loan(type='number',name='max_number_loan',placeholder='15',required,value=max_number_loan)
+  .form-group
+    label(for='max_days_loan') 可借天数
+    input.form-control#max_days_loan(type='number',name='max_days_loan',placeholder='30',required,value=max_days_loan)
+  .form-group
+    label(for='max_times_renewals') 可续借次数
+    input.form-control#max_times_renewals(type='number',name='max_times_renewals',placeholder='1',required,value=max_times_renewals)
+  .form-group
+    label(for='max_days_renewals') 续借天数
+    input.form-control#max_days_renewals(type='number',name='max_days_renewals',placeholder='30',required,value=max_days_renewals)
+
+  .form-group
+    label(for='reservation_threshold') 预约阈值(册数)
+    input.form-control#reservation_threshold(type='number',name='reservation_threshold',placeholder='2',required,value=reservation_threshold)
+  .form-group
+    label(for='reservation_expire') 预约失效时间(天)
+    input.form-control#reservation_expire(type='number',name='reservation_expire',placeholder='7',required,value=reservation_expire)
+
+block sidebar
+  .notes
+    .panel.panel-default
+      .panel-heading 选项说明
+      .panel-body
+        dl
+          dt 图书类型
+          dd 定义各种图书类型，比如中文图书、西文图书
+          dt 可借数
+          dd 该图书类型最多可借的册数
+          dt 可借天数
+          dd 该图书类型最多可借的天数
+          dt 可续借次数
+          dd 该图书类型最多续借的次数
+          dt 续借天数
+          dd 该图书类型续借的天数
+          dt 预约阈值
+          dd 该藏书低于某个阈值的时候可以进行预约
+          dt 预约失效天数
+          dd 预约图书到库，如果在指定天数没有被预约者借出，将预约将失效
+
