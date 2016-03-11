@@ -1,5 +1,6 @@
 var mg = require('mongoose'),
     cacheable = require('./cacheable'),
+    Promise = require('bluebird'),
     Schema = mg.Schema;
 
 var bookSchema = new Schema({
@@ -42,24 +43,35 @@ var bookSchema = new Schema({
 });
 
 
-var incr = function(key,dbkey){
-  return function(bookid,incrValue){
+var incr = function(key,dbkey,threshold){
+  threshold = threshold || 5;
+  return function(bookid,incrValue,initialize){
     var Model = this;
     incrValue = incrValue || 1;
+    initialize = initialize || Model.findById(bookid,{statistics_info:1})
+      .then(function(book){
+        if(book){
+          return book.statistics_info[dbkey];
+        }
+      });
+
     cacheable.incrWriteBack.call(this,bookid,key,function(value,id,key){
       var updatedoc = {};
           updatedoc['statistics_info.'+dbkey] = value;
       Model.findByIdAndUpdate(id,updatedoc,function(){});
-    },incrValue);
+    },initialize,incrValue,threshold)
+    .catch(function(err){
+      console.log('出错',err);
+    });
   };
 };
 
-//增加收藏数量
-bookSchema.statics.incrMarkCount = incr('marked','mark_count');
+//增加收藏数量,为了避免崩溃后出现数据不一致，阈值设置为1
+bookSchema.statics.incrMarkCount = incr('marked','mark_count',1);
 //增加浏览数量
 bookSchema.statics.incrViewCount = incr('viewed','view_count');
 bookSchema.statics.incrBorrowCount = incr('loan','borrow_count');
-bookSchema.statics.incrRepliesCount = incr('replied','reply_count');
+bookSchema.statics.incrRepliesCount = incr('replied','reply_count',1);
 
 
 ['viewed','marked','loan','replied'].forEach(function(key){

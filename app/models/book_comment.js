@@ -63,7 +63,7 @@ bookCommentSchema.statics.incrScoringCount = function(bookid){
     .catch(function(err){
       console.log(err);
     });
-  },1,1);
+  },5,1,5);
 };
 
 module.exports = mg.model('BookComment',bookCommentSchema);

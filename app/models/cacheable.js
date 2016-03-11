@@ -1,6 +1,7 @@
-var  _ = require('underscore');
-var Promise = require('es6-promise').Promise;
-var cache = require('./cache');
+var _ = require('underscore'),
+    Promise = require('bluebird'),
+    cache = require('./cache'),
+    client = cache.client;
 
 /*
  * 缓存保存一个数据上次更新的时间戳，为一些数据缓存检验是否以及过时
@@ -307,20 +308,37 @@ exports.cacheTouch = function(){
 };
 
 /* 增加一个值，等到达一个阈值后回写*/
-exports.incrWriteBack = function(id,key,writeBack,incrValue,threshold){
+exports.incrWriteBack = function(id,key,writeBack,initialize,incrValue,threshold){
   var Model = this,
       modelName = Model.modelName,
       keyName = modelName+':'+id;
 
   incrValue = incrValue || 1;
   threshold = threshold || 5;
-  return cache.client.hincrby(keyName,key,incrValue)
-    .then(function(value){
-      if(value % threshold === 0){
-        writeBack(value,id,key);
+  return client.hget(keyName,key) //测试是否存在
+    .then(function(result){
+      if(!result){
+        //键不存在
+        return Promise.resolve(initialize)
+          .then(function(value){
+            if(value){
+              console.log('键不存在，设置键',value);
+              return client.hset(keyName,key,value);
+            }
+          });
       }
-      return value;
-    });
+    })
+  .then(function(){
+    return client.hincrby(keyName,key,incrValue)
+      .then(function(value){
+        console.log('增加键',value);
+        if(value % threshold === 0){
+          console.log('回写',value);
+          writeBack(value,id,key);
+        }
+        return value;
+      });
+  });
 };
 
 /* 获取增加的值 */
@@ -331,3 +349,6 @@ exports.getIncr = function(id,key){
 
   return cache.client.hget(keyName,key);
 };
+
+
+//TODO 关闭时，缓存回写,不要依赖于缓存

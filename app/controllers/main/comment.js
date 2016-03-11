@@ -54,9 +54,10 @@ exports.create = function(req,res,next){
       }
 
       //获取已有的评论数,来确定当前评论的楼层
+      var count = null;
       BookComment.getRepliesNumber(bookid)
-        .then(function(count){
-          count = Number.parseInt(count);
+        .then(function(_count){
+          count = Number.parseInt(_count);
           if(!count){
             count = 1;
           }else{
@@ -85,7 +86,7 @@ exports.create = function(req,res,next){
           if(product){
             // TODO 消息通知:通知被回复的用户
             //增加评论数
-            Book.incrRepliesCount(product.book_id);
+            Book.incrRepliesCount(product.book_id,1,count-1);
             //增加评级数
             if(product.rank > 0)
               BookComment.incrScoringCount(product.book_id);

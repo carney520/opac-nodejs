@@ -183,7 +183,7 @@ exports.show = function(req,res,next){
       product.marked = product.marked || (stat && stat.mark_count) || 0;
       product.viewed = product.viewed || (stat && stat.view_count) || 0;
       product.replied = product.replied || (stat && stat.mark_count) || 0;
-      Book.incrViewCount(id);
+      Book.incrViewCount(id,1,product.viewed);
       res.render('book/show',product);
     }else{
       next();
