@@ -68,29 +68,19 @@ exports.create = function(req,res,next){
     if(err) return next(err);
     new Book(params).save()
       .then(function(product){
-        res.format({
-          json:function(){
-            res.json({
-              code:200,
-              message:'created',
-              id:product.id,
-              name:product.name
-            });
-          },
-          html:function(){
-            req.flash('success','创建成功');
-            res.redirect(303,req.url_for('intl_books'));
-          }
-        });
-      })
+          res.status(201).json({
+            code:200,
+            message:'created',
+            id:product.id,
+            name:product.name
+          });
+        })
     .catch(function(err){
       if(err.name ==='ValidationError'){
         //验证失败
-        res.locals.flash=[{type:'danger',message:'创建失败:表单数据有误'}];
-        res.render('book/new',params);
+        res.status(400).json({code:400,message:'表单数据格式错误'});
       }else if(err.code === 11000){
-        res.locals.flash=[{type:'danger',message:'索引号或者isbn号重复'}];
-        res.render('book/new',params);
+        res.status(400).json({code:400,message:'索引号或者ISBN号重复'});
       }else
         next(err);
     });
@@ -115,6 +105,10 @@ exports.search = function(req,res,next){
         delete params[key];
       }
     });
+    //避免空请求
+    if(params.hasOwnProperty('field') && !params.q){
+      return;
+    }
     params.q = params.q || "";
     params.count = params.count || 3;  //每页显示数
     params.sort_key = params.sort_key || 'publication_year';

@@ -27,12 +27,18 @@ exports.before = [
   },
 
   function(req,res,next){
-    //nav
-    res.locals.navs = [
+    var locals = res.locals;
+    locals.navs = [
       {name: '图书管理',
         url: req.url_for('intl_books')
       }
     ];
+    if(req.user){
+      var role = req.user.role;
+      if(role === 'super'){
+        locals.nav.push({name:'系统管理',url:req.url_for('system')});
+      }
+    }
     next();
   }
 ];

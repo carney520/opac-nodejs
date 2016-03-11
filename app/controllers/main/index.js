@@ -42,8 +42,8 @@ exports.prefix = '/';  //根目录
 
 //子系统前置过滤器：比如验证和一些子系统的全局设置以及登录控制器
 exports.before = [
-  //试图帮助方法
-  //为试图提供 login_url 登录链接，如果期望角色的用户登录后可以提供
+  //视图帮助方法
+  //为视图提供 login_url 登录链接，如果期望角色的用户登录后可以提供
   //  user,logined,logout_url，is{role} 等帮助方法
   function(req,res,next){
     passport._viewHelper('reader',
@@ -63,7 +63,8 @@ exports.before = [
   },
 
   function(req,res,next){
-    res.locals.navs = [
+    var locals = res.locals;
+    locals.navs = [
       {name:'主页',
         url:req.url_for('main')
       },
@@ -72,8 +73,18 @@ exports.before = [
       }
     ];
 
-    if(req.user && req.user.role === 'reader'){
-      res.locals.navs.push({name:'个人中心',url:req.url_for('user',req.user.card_no)});
+    if(req.user){
+      var role = req.user.role;
+      switch(role){
+        case 'reader':
+          locals.navs.push({name:'个人中心',url:req.url_for('user',req.user.card_no)});
+          break;
+        case 'admin':
+          locals.navs.push({name:'图书管理',url:req.url_for('library')});
+          break;
+        case 'super':
+          locals.nav.push({name:'系统管理',url:req.url_for('system')});
+      }
     }
     next();
   }
