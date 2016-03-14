@@ -70,11 +70,10 @@ var incr = function(key,dbkey,threshold){
 bookSchema.statics.incrMarkCount = incr('marked','mark_count',1);
 //增加浏览数量
 bookSchema.statics.incrViewCount = incr('viewed','view_count');
-bookSchema.statics.incrBorrowCount = incr('loan','borrow_count');
 bookSchema.statics.incrRepliesCount = incr('replied','reply_count',1);
 
 
-['viewed','marked','loan','replied'].forEach(function(key){
+['viewed','marked','replied'].forEach(function(key){
   bookSchema.statics['get'+key.replace(/^./,function(match){return match.toUpperCase();})] = function(id){
     return cacheable.getIncr.call(this,id,key)
       .then(function(value){

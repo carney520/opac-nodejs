@@ -17,6 +17,9 @@ main{
 a:hover{
   text-decoration:none;
 }
+.btn{
+  margin-left:2px !important;
+}
 .loading{
   display:inline-block;
   width:30px;
@@ -821,6 +824,21 @@ img.avatar{
   float:right;
   font-size:13px;
 }
+
+.rank{
+  font-weight:bold;
+  margin-right:2px;
+}
+.appendix{
+  font-size:13px;
+  margin-left:3px;
+  color:gray;
+}
+.next-page{
+  cursor:pointer;
+  text-align:center;
+}
+
 .books-container .next{
   display:block;
   text-align:center;

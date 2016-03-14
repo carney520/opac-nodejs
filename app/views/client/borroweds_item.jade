@@ -1,0 +1,28 @@
+tr
+  //- 续借
+  td 
+    if status === 'overdue'
+      span.danger 超期
+    else if renewals_times === max_times_renewals
+      span.danger 续满
+    else
+      input(type='checkbox',name='accession_no',value=accession_no)
+  //- 超期时间
+  -var _due_date = new Date(due_date);
+  -var _created_at = new Date(created_at);
+  td #{_due_date.toLocaleDateString()}
+  //- 借书时间
+  td #{_created_at.toLocaleDateString()}
+  //-书名
+  td
+    a(href=book_url) #{name}
+  //- 图书类型
+  td #{type}
+  //- 访问号
+  td #{accession_no}
+  -var one_day = 1000*60*60*24;
+  -var days = Math.round((_due_date.getTime() - Date.now()) / one_day);
+  if days >= 0
+    td.success 还有#{days}天到期
+  else
+    td.danger 已超期#{Math.abs(days)}天

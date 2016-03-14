@@ -1,4 +1,10 @@
 extends ../layouts/new_and_edit.jade
+block meta
+  //uri 模板
+  -var usersTemplate = url_template_for('users','intl_books','books');
+  meta(name='url-template',content=JSON.stringify(usersTemplate.templates))
+  meta(name='url-replacement',content=JSON.stringify(usersTemplate.replacements))
+
 block inputs
   +input('书名','name','text',name)(required)
   +input('作者','author','text',author)(required)
@@ -9,7 +15,7 @@ block inputs
   +input('语言','language','text',language)(list='for-language',required)
   +datalist('for-language',['中文','英文','日文','法文'])
   +input('页数','page_no','number',page_no)
-  +input('出版年(xxxx)','publication_year','date',publication_year)
+  +input('出版年(YYYY-MM-DD)','publication_year','date',publication_year)
   +input('价格','price','text',price)
   +input('简介','summary','text',summary)
   +textarea('目录','contents',contents)
@@ -48,4 +54,4 @@ block sidebar
      #douban-items.list-group
 
 block script
-  != js('book.js')
+  != js('create_book.js')

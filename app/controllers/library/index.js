@@ -67,3 +67,4 @@ exports.authentication = function(req,res,next){
 //控制器
 exports.book = require('./book');
 exports.collection = require('./collection');
+exports.borrowed = require('./borrowed');

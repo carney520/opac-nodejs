@@ -7,7 +7,7 @@ block meta
   if is_reader
     meta(name='user-id',content=user.card_no)
 block content
-  if is_reader
+  if is_reader && myself
     div.tab-container
       ul.nav.nav-tabs
         li.active
@@ -15,7 +15,7 @@ block content
         li
           a#profile-tab(href='#profile',data-toggle="tab") 个人资料
         li
-          a(href='#book_lent',data-toggle="tab") 借阅情况
+          a#borroweds-tab(href='#book_lent',data-toggle="tab") 借阅情况
         li
           a#favor-tab(href='#favorites',data-toggle="tab") 收藏
         li
@@ -50,7 +50,41 @@ block content
                 a#goto-change-password(href='#change-password',data-toggle="tab") 修改密码
                 
         .tab-pane#book_lent
-
+          .panel.panel-default
+            .panel-heading 当前借阅情况
+            .panel-body
+              .load-status-for-borroweds
+                img.loading(src='/assets/loading.gif')
+                |正在加载借阅列表
+              table.table
+                thead
+                  tr
+                    th 续借
+                    th 超期时间
+                    th 借书时间
+                    th 书名
+                    th 图书类型
+                    th 访问号
+                    th 
+                tbody#borroweds-list
+              button#renew.btn.btn-default 续借
+              button.check-all.btn.btn-default(data-target='input[name="accession_no"]') 全选
+          .panel.panel-default
+            .panel-heading 借阅历史
+            .panel-body
+              .load-status-for-history
+                img.loading(src='/assets/loading.gif')
+                |正在加载借阅历史
+              table.table
+                thead
+                  tr
+                    th 借书时间
+                    th 还书时间
+                    th 书名
+                    th 图书类型
+                    th 访问号
+                tbody#history-list
+              .next-page.hidden 下一页
           //-图书收藏
         .tab-pane#favorites
           .tab-pane-title
@@ -149,7 +183,12 @@ mixin public
     .panel.panel-default
       .panel-heading 最近借过的书
       .panel-body
-        //-TODO
+        ul.user-info-list
+          each borrowed in borroweds
+            li
+              .info-link
+                a(href=url_for('book',borrowed.book_id)) #{borrowed.name}
+              .info-date #{getTimeval(borrowed.created_at)}
 
     .panel.panel-default
       .panel-heading 最近的收藏
@@ -179,4 +218,6 @@ mixin public
               .info-date #{getTimeval(comment.created_on)}
 
 block script
+  != js('runtime.js')
+  != js('templates.js')
   != js('user.js')

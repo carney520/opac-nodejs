@@ -17,7 +17,9 @@ exports.index = function(req,res,next){
     week:Composition.getMostSearched('week'),
     month:Composition.getMostSearched('month'),
     most_favored: Composition.getMostFavored(),
-    most_hot: Composition.getMostHot()
+    most_hot: Composition.getMostHot(),
+    most_borrow: Composition.getMostBorrow(),
+    new_releases: Composition.getNewReleases()
   })
   .then(function(results){
     _.forEach(results,function(value,key){

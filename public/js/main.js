@@ -165,5 +165,14 @@ $(document).ready(function(){
     $('.navbar-user-status-list').addClass('drop-up');
   });
 
+  //组件
+  
+  //全选
+  $('.check-all').click(function(event){
+    var $this = $(this),
+        target = $this.data('target');
+    $(target).attr('checked','checked');
+    return false;
+  });
 });
 

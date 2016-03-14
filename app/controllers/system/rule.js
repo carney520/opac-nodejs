@@ -160,6 +160,6 @@ exports.destroy = function(req,res,next){
 //params filter
 var book_type_params = function(req,cb){
   req.filter.require('name','max_number_loan','max_days_loan','max_times_renewals',
-      'max_days_renewals','reservation_threshold','reservation_expire')
+      'max_days_renewals','reservation_threshold','reservation_expire','penalty')
     .done(cb);
 };

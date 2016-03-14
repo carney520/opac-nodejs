@@ -14,7 +14,8 @@ var bookTypeSchema = new Schema({
   max_days_renewals:{type:Number,required:true},
   reservation_threshold:{type:Number,require:true},
   reservation_expire:{type:Number,required:true},
-  created_at:{type:Date,default:Date.now}
+  created_at:{type:Date,default:Date.now},
+  penalty: {type:Number,default:0}        //罚款金额
 });
 
 bookTypeSchema.statics.getNames = function(){

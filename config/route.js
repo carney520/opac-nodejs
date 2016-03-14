@@ -179,7 +179,8 @@ module.exports = function(app){
 
   var intl_books = app.register('/library','intl_books'),
       intlBookController = library.book,
-      intlBookCollectionController = library.collection;
+      intlBookCollectionController = library.collection,
+      intlBookBorrowedController = library.borrowed;
 
   intl_books.use(intlBookController.before);
   intl_books.route('/')
@@ -202,6 +203,9 @@ module.exports = function(app){
     .put(intlBookCollectionController.update)
     .delete(intlBookCollectionController.destroy);
   intl_books.get('/:id/collections/:collection_id/edit','collection_edit',intlBookCollectionController.edit);
+
+  intl_books.post('/borroweds',intlBookBorrowedController.create);             //借书
+  intl_books.delete('/borroweds/:accession_no',intlBookBorrowedController.destroy);      //还书
 
 
   /*
@@ -254,6 +258,10 @@ module.exports = function(app){
     .get(userController.show)
     .put(userController.update);
   user.put('/:card_no/password',userController.change_password);
+  /*借阅*/
+  user.get('/:card_no/borroweds',userController.get_borrowed);
+  user.put('/:card_no/borroweds/:accession_no',userController.renew);
+
   /*图书收藏*/
   user.route('/:card_no/books')
     .get(tagController.index)
@@ -279,6 +287,12 @@ module.exports = function(app){
   book.delete('/:id/comments/:reply_no/likes/:card_no',commentController.undo_like); //取消赞
 
   //杂项
+  var misc = app.register('/','misc',true);
+
+  misc.get('/rules');                      //借阅规则
+  var test = app.register('/','tests');
+  test.get('/',intlBookBorrowedController.create);
+  test.get('/return',intlBookBorrowedController.destroy);
 
 
   console.log(admins.p);

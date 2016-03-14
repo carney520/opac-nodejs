@@ -17,9 +17,10 @@ block content
           |收藏最多的图书
         .panel-body
           ul.user-info-list
-            each item in most_favored
+            each item,index in most_favored
               li
                 .info-link
+                  span.rank ##{index+1}
                   a(href=url_for('book',item._id)) #{item.name}
                 .info-date
                   span.badge #{item.count}
@@ -29,10 +30,12 @@ block content
           |最受关注的图书
         .panel-body
           ul.user-info-list
-            each item in most_hot
+            each item,index in most_hot
               li
                 .info-link
+                  span.rank ##{index+1}
                   a(href=url_for('book',item._id)) #{item.name}
+                  span.appendix #{item.author.join(',')}
                 .info-date
                   span.badge #{item.statistics_info.reply_count}
 
@@ -40,18 +43,38 @@ block content
       .panel.panel-default
         .panel-heading
           |热门借阅
+        .panel-body
+          ul.user-info-list
+            each item,index in most_borrow
+              li
+                .info-link
+                  span.rank ##{index+1}
+                  a(href=url_for('book',item._id)) #{item.name}
+                  span.appendix #{item.author.join(',')}
+                .info-date
+                  span.badge #{item.statistics_info.borrow_count}
 
     .col-md-6
       .panel.panel-default
         .panel-heading
           |新书排行
+        .panel-body
+          ul.user-info-list
+            each item,index in new_releases
+              li
+                .info-link
+                  span.rank ##{index+1}
+                  a(href=url_for('book',item._id)) #{item.name}
+                  span.appendix #{item.author.join(',')}
+                .info-date
+                  |#{getTimeval(item.entry_date)}添加
             
 block sidebar
   .panel.panel-info
     .panel-heading
       |本周最热检索词
     .panel-body
-      ul.word-list
+      ol.word-list
         each value,key in week
           li.word-list-item
             a(href=url_for('book_search',{query:{field:'any',q:key}})) #{key}
@@ -61,7 +84,7 @@ block sidebar
     .panel-heading
       |本月最热检索词
     .panel-body
-      ul.word-list
+      ol.word-list
         each value,key in month
           li.word-list-item
             a(href=url_for('book_search',{query:{field:'any',q:key}})) #{key}

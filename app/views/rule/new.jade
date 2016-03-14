@@ -22,7 +22,9 @@ block inputs
   .form-group
     label(for='reservation_expire') 预约失效时间(天)
     input.form-control#reservation_expire(type='number',name='reservation_expire',placeholder='7',required,value=reservation_expire)
-
+  .form-group
+    label(for='penalty') 罚款金额(元/天)
+    input.form-control#penalty(type='number',name='penalty',placeholder='0',required,value=penalty)
 block sidebar
   .notes
     .panel.panel-default

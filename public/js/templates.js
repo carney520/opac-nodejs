@@ -1,5 +1,56 @@
 this["Template"] = this["Template"] || {};
 
+this["Template"]["borroweds_history_item"] = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (Date, accession_no, book_url, created_at, name, return_date, type) {
+buf.push("<tr><td>" + (jade.escape((jade_interp = new Date(created_at).toLocaleDateString()) == null ? '' : jade_interp)) + "</td><td>" + (jade.escape((jade_interp = new Date(return_date).toLocaleDateString()) == null ? '' : jade_interp)) + "</td><td><a" + (jade.attr("href", book_url, true, false)) + ">" + (jade.escape((jade_interp = name) == null ? '' : jade_interp)) + "</a></td><td>" + (jade.escape((jade_interp = type) == null ? '' : jade_interp)) + "</td><td>" + (jade.escape((jade_interp = accession_no) == null ? '' : jade_interp)) + "</td></tr>");}.call(this,"Date" in locals_for_with?locals_for_with.Date:typeof Date!=="undefined"?Date:undefined,"accession_no" in locals_for_with?locals_for_with.accession_no:typeof accession_no!=="undefined"?accession_no:undefined,"book_url" in locals_for_with?locals_for_with.book_url:typeof book_url!=="undefined"?book_url:undefined,"created_at" in locals_for_with?locals_for_with.created_at:typeof created_at!=="undefined"?created_at:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"return_date" in locals_for_with?locals_for_with.return_date:typeof return_date!=="undefined"?return_date:undefined,"type" in locals_for_with?locals_for_with.type:typeof type!=="undefined"?type:undefined));;return buf.join("");
+};
+
+this["Template"]["borroweds_item"] = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (Date, Math, accession_no, book_url, created_at, due_date, max_times_renewals, name, renewals_times, status, type) {
+buf.push("<tr><td> ");
+if ( status === 'overdue')
+{
+buf.push("<span class=\"danger\">超期</span>");
+}
+else if ( renewals_times === max_times_renewals)
+{
+buf.push("<span class=\"danger\">续满</span>");
+}
+else
+{
+buf.push("<input type=\"checkbox\" name=\"accession_no\"" + (jade.attr("value", accession_no, true, false)) + "/>");
+}
+buf.push("</td>");
+var _due_date = new Date(due_date);
+var _created_at = new Date(created_at);
+buf.push("<td>" + (jade.escape((jade_interp = _due_date.toLocaleDateString()) == null ? '' : jade_interp)) + "</td><td>" + (jade.escape((jade_interp = _created_at.toLocaleDateString()) == null ? '' : jade_interp)) + "</td><td><a" + (jade.attr("href", book_url, true, false)) + ">" + (jade.escape((jade_interp = name) == null ? '' : jade_interp)) + "</a></td><td>" + (jade.escape((jade_interp = type) == null ? '' : jade_interp)) + "</td><td>" + (jade.escape((jade_interp = accession_no) == null ? '' : jade_interp)) + "</td>");
+var one_day = 1000*60*60*24;
+var days = Math.round((_due_date.getTime() - Date.now()) / one_day);
+if ( days >= 0)
+{
+buf.push("<td class=\"success\">还有" + (jade.escape((jade_interp = days) == null ? '' : jade_interp)) + "天到期</td>");
+}
+else
+{
+buf.push("<td class=\"danger\">已超期" + (jade.escape((jade_interp = Math.abs(days)) == null ? '' : jade_interp)) + "天</td>");
+}
+buf.push("</tr>");}.call(this,"Date" in locals_for_with?locals_for_with.Date:typeof Date!=="undefined"?Date:undefined,"Math" in locals_for_with?locals_for_with.Math:typeof Math!=="undefined"?Math:undefined,"accession_no" in locals_for_with?locals_for_with.accession_no:typeof accession_no!=="undefined"?accession_no:undefined,"book_url" in locals_for_with?locals_for_with.book_url:typeof book_url!=="undefined"?book_url:undefined,"created_at" in locals_for_with?locals_for_with.created_at:typeof created_at!=="undefined"?created_at:undefined,"due_date" in locals_for_with?locals_for_with.due_date:typeof due_date!=="undefined"?due_date:undefined,"max_times_renewals" in locals_for_with?locals_for_with.max_times_renewals:typeof max_times_renewals!=="undefined"?max_times_renewals:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"renewals_times" in locals_for_with?locals_for_with.renewals_times:typeof renewals_times!=="undefined"?renewals_times:undefined,"status" in locals_for_with?locals_for_with.status:typeof status!=="undefined"?status:undefined,"type" in locals_for_with?locals_for_with.type:typeof type!=="undefined"?type:undefined));;return buf.join("");
+};
+
+this["Template"]["card_no_inputer"] = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (name, title, value) {
+buf.push("<div class=\"window-label\">" + (jade.escape((jade_interp = title) == null ? '' : jade_interp)) + "</div><input type=\"text\"" + (jade.attr("name", name, true, false)) + (jade.attr("value", value, true, false)) + " class=\"window-input\"/>");}.call(this,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"title" in locals_for_with?locals_for_with.title:typeof title!=="undefined"?title:undefined,"value" in locals_for_with?locals_for_with.value:typeof value!=="undefined"?value:undefined));;return buf.join("");
+};
+
 this["Template"]["comment_item"] = function template(locals) {
 var buf = [];
 var jade_mixins = {};

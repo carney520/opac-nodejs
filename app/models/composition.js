@@ -8,6 +8,7 @@ var Promise = require('bluebird'),
 var one_day = 60*60*24,
     one_week = one_day *7,
     one_month = one_week *4,
+    one_quarter = one_month * 3,
     one_hour = 60*60,
     one_minute = 60;
 
@@ -123,7 +124,7 @@ exports.getMostFavored = function(){
   });
 };
 
-
+/*按评论数排名*/
 exports.getMostHot = function(){
   var key = 'mostHot';
   return new Promise(function(resolve,reject){
@@ -137,8 +138,8 @@ exports.getMostHot = function(){
         });
       }else{
         //从mg中获取并缓存
-        Book.find()
-          .select({name:1,statistics_info:1})
+        Book.find({'statistics_info.reply_count':{$gt:0}})
+          .select({name:1,statistics_info:1,author:1,translator:1})
           .sort({'statistics_info.reply_count':-1})
           .limit(100)
           .then(function(books){
@@ -153,5 +154,75 @@ exports.getMostHot = function(){
     .catch(function(err){
       reject(err);
     });
+  });
+};
+
+
+/* 借出数最多的图书*/
+exports.getMostBorrow = function(){
+  var key = 'mostBorrow';
+  return new Promise(function(resolve,reject){
+    cache.isExist(key)
+      .then(function(value){
+        if(value === 1){
+          cache.get(key,function(err,data){
+            if(err) return reject(err);
+            resolve(data);
+          });
+        }else{
+          Book.find({'statistics_info.borrow_count':{$gt:0}})
+          .select({name:1,statistics_info:1,author:1,translator:1})
+          .sort({'statistics_info.borrow_count':-1})
+          .limit(100)
+          .then(function(books){
+            cache.set(key,books,one_day);
+            resolve(books);
+          })
+          .catch(function(err){
+            reject(err);
+          });
+        }
+      })
+      .catch(function(err){
+        reject(err);
+      });
+  });
+};
+
+//新书排行
+//本季度新书，按评论数排行
+exports.getNewReleases = function(){
+  var key = 'mostPopularOfNewRelease';
+  return new Promise(function(resolve,reject){
+    cache.isExist(key)
+      .then(function(value){
+        if(value === 1){
+          cache.get(key,function(err,data){
+            if(err) return reject(err);
+            resolve(data);
+          });
+        }else{
+          var now = Date.now(),
+              floor = new Date();
+          floor.setTime(now - one_quarter*1000);
+          Book.find({
+            entry_date:{$gte:floor},
+            'statistics_info.reply_count':{$gt:0}
+          })
+            .select({name:1,statistics_info:1,author:1,translator:1,entry_date:1})
+            .sort({'statistics_info.reply_count':-1})
+            .limit(100)
+            .then(function(books){
+              cache.set(key,books,one_day);
+              resolve(books);
+            })
+            .catch(function(err){
+              reject(err);
+            });
+        }
+      })
+      .catch(function(err){
+        reject(err);
+      });
   });
 };

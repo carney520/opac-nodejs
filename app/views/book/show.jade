@@ -1,7 +1,7 @@
 extends ../layouts/index.jade
 block meta
   //uri 模板
-  -var usersTemplate = url_template_for('users','books');
+  -var usersTemplate = url_template_for('users','books','intl_books');
   meta(name='url-template',content=JSON.stringify(usersTemplate.templates))
   meta(name='url-replacement',content=JSON.stringify(usersTemplate.replacements))
   meta(name='book-id',content=book.id)
@@ -70,6 +70,7 @@ block content
     .book-item-body.foldable
       !=book.contents
 
+  //-馆藏情况
   .book-item
     .book-item-title
       |馆藏情况
@@ -86,6 +87,7 @@ block content
           if is_admin || is_super
             th 编辑
             th 删除
+            td 借阅
         -var statusMap = {free:'空闲',lent_out:'借出',reserved:'预约'}
         each collection,index in book.books
           tr
@@ -98,6 +100,9 @@ block content
                 a(href=url_for('collection_edit',book.id,collection.accession_no)) 编辑
               td 
                 a.delete-btn(href=url_for('collection',book.id,collection.accession_no)) 删除
+              td
+                button.lent_out(data-accession_no=collection.accession_no,data-book_id=book.id,data-method= collection.status === 'lent_out' ? 'return' : 'lent_out')
+                  |#{collection.status === 'lent_out' ? '归还' :'借出'}
 
   //-评论
   .book-item
