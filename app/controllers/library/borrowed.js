@@ -1,6 +1,7 @@
 var models = require('../../models/index'),
     Book = models.Book,
     BookBorrowed = models.BookBorrowed,
+    BookReservation = models.BookReservation,
     Reader = models.Reader,
     BookType = models.BookType,
     _ = require('underscore'),
@@ -14,10 +15,11 @@ exports.create = function(req,res,next){
     var accession_no = params.accession_no,
         card_no = params.card_no,
         book_id = params.book_id,
-        reader = null,       //读者
-        types = null,       //图书类型,即借阅规则
-        records = null,
-        last_status = null,
+        reader,       //读者
+        types,       //图书类型,即借阅规则
+        records,
+        last_status,
+        reservation,
         capacity = {};    //图书可借容量
 
     //1 读取读者信息
@@ -27,6 +29,7 @@ exports.create = function(req,res,next){
           reader = product;
           var status = reader.status;
           switch(status){
+            //读者以及被注销
             case 'logout':
               res.status(403).json({code:403,message:'Reader was logout',err:'logout'});
               break;
@@ -37,7 +40,9 @@ exports.create = function(req,res,next){
                     status:{$ne:'returned'}
                   })
                   .select({type:1,created_at:1,due_date:1,status:1}),
-                types: BookType.all()
+                types: BookType.all(),
+                reservation: BookReservation.findOne({
+                  book_id:book_id,user_id:card_no})
               });
           }
         }else{
@@ -48,8 +53,10 @@ exports.create = function(req,res,next){
       if(result){
         types = _.indexBy(result.types,'name');
         records = result.records;
+        reservation = result.reservation;
         var promises = [];
-        //分析借阅记录
+
+        //分析借阅记录,检查是否有超期书籍
         var now = Date.now();
         records.forEach(function(value){
           var due_date = new Date(value.due_date).getTime();
@@ -105,8 +112,15 @@ exports.create = function(req,res,next){
             collection.status = 'lent_out';
             //记录借出数
             book.statistics_info.borrow_count +=1;
-            console.log(capacity);
-            return book.save(); //如果出错就不会保存了
+            var promises = [];
+            if(reservation){
+              //当前借阅者是本书的预约者，自动删除预约记录
+              promises.push(reservation.remove());
+            }else{
+              promises.push(null); //填充作用
+            }
+            promises.push(book.save());
+            return Promise.all(promises);
           }else{
             res.status(403).json({code:403,message:'capacity full',err:'full',type:book_type});
           }
@@ -116,7 +130,8 @@ exports.create = function(req,res,next){
           res.status(404).json({code:404,message:'Book not found',err:'book'});
       }
     })
-    .then(function(book){
+    .then(function(results){
+      var book = results && results[1];
       if(book){
         var type = types[book.type],
             max_days_loan = type.max_days_loan,
@@ -168,10 +183,12 @@ exports.destroy = function(req,res,next){
     .done(function(err,params){
     if(err) return next(err);
     var book_id = params.book_id,
-        record = null,
-        book = null,
-        amount = Number.parseInt(params.amount) || 0;
-        collection = null;
+        record,
+        reservation,
+        book,
+        type,
+        amount = Number.parseInt(params.amount) || 0,
+        collection;
 
     //读取图书信息
     Book.findOne({_id:book_id,'books.accession_no':accession_no})
@@ -184,9 +201,13 @@ exports.destroy = function(req,res,next){
             res.json({code:200,message:'Book alreay returned',err:'returned'});
           }else{
             //读取借阅记录,和借阅规则
-            return BookBorrowed.findOne({
-              accession_no:accession_no,
-              status:{$ne:'returned'}
+            return Promise.props({
+              borrowed: BookBorrowed.findOne({
+                accession_no:accession_no,
+                status:{$ne:'returned'}
+              }),
+              reservation: BookReservation.peek(book.id),
+              types: BookType.all()
             });
           }
         }else{
@@ -194,13 +215,16 @@ exports.destroy = function(req,res,next){
             .json({code:404,message:'Book not found',err:'book'});
         }
       })
-    .then(function(borrowed){
-      if(borrowed){
-        record = borrowed;
-        var penalty = borrowed.penalty;
+    .then(function(results){
+      var promises = [];
+      record = results.borrowed;
+      reservation = results.reservation.shift();
+      type = _.indexBy(results.types,'name')[book.type];
+      if(record){
+        var penalty = record.penalty;
         //计算是否超期
         var now = Date.now(),
-            overdue_date = new Date(borrowed.due_date).getTime(),
+            overdue_date = new Date(record.due_date).getTime(),
             interval = now - overdue_date,
             //计算超出金额
             totalPenalty = Math.floor(interval / one_day) * penalty;
@@ -215,10 +239,20 @@ exports.destroy = function(req,res,next){
         }
 
         //没有超期或完成扣费
-        borrowed.status = 'returned';
-        borrowed.return_date = new Date();
-        return borrowed.save();
-      }else if(!res.headersSent && !borrowed){
+        record.status = 'returned';
+        record.return_date = new Date();
+        promises.push(record.save());
+        if(reservation){
+          //TODO 存在预约,消息通知预约者取书
+          reservation.book_available = true;
+          reservation.book_available_date = new Date();
+          reservation.latest_loan_date = new Date();//最后取书的时间
+          reservation.latest_loan_date.setTime(Date.now() + type.reservation_expire* one_day);
+          console.log('notice '+reservation.user_name +'to get book'+reservation.book.name);
+          promises.push(reservation.save());
+        }
+        return Promise.all(promises);
+      }else if(!res.headersSent && !record){
         //没有找到借阅记录,即已经归还
         res.json({code:200,message:'Book alreay returned',err:'returned'});
       }
@@ -227,15 +261,21 @@ exports.destroy = function(req,res,next){
       if(results){
         //修改记录成功
         book.availables+=1;
-        collection.status = 'free';
+        if(reservation){
+          collection.status = 'reserved';
+        }else{
+          collection.status = 'free';
+        }
         book.save()
           .then(function(book){
             //成功归还
+            //TODO 通知管理员放入特定书柜
             res.json({
               code:200,
               message:'success',
               card_no:record.user_id,
-              book:_.pick(book,'name','author','publisher','_id')
+              book:_.pick(book,'name','author','publisher','_id'),
+              reserved: reservation ? true : false,
             });
           })
         .catch(function(err){
@@ -261,7 +301,6 @@ exports.update = function(req,res,next){
 
 //获取借阅记录
 exports.show = function(req,res,next){
-
 };
 
 var borrowed_params = function(req,callback){

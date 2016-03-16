@@ -83,7 +83,7 @@ exports.before = [
           locals.navs.push({name:'图书管理',url:req.url_for('library')});
           break;
         case 'super':
-          locals.nav.push({name:'系统管理',url:req.url_for('system')});
+          locals.navs.push({name:'系统管理',url:req.url_for('system')});
       }
     }
     next();
@@ -131,3 +131,4 @@ exports.user = require('./user');
 exports.tag = require('./tag');
 exports.book = require('../library/book');
 exports.comment = require('./comment');
+exports.reservation = require('./reservation');

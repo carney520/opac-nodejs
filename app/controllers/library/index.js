@@ -36,7 +36,7 @@ exports.before = [
     if(req.user){
       var role = req.user.role;
       if(role === 'super'){
-        locals.nav.push({name:'系统管理',url:req.url_for('system')});
+        locals.navs.push({name:'系统管理',url:req.url_for('system')});
       }
     }
     next();

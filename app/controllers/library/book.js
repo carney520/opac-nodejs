@@ -2,6 +2,7 @@ var models = require('../../models/index'),
     BookType = models.BookType,
     BookCategory = models.BookCategory,
     Book = models.Book,
+    BookReservation = models.BookReservation,
     Composition = models.Composition,
     multer = require('multer'),
     path = require('path'),
@@ -169,14 +170,24 @@ exports.show = function(req,res,next){
     viewed:Book.getViewed(id),
     marked:Book.getMarked(id),
     replied:Book.getReplied(id),
-    book: Book.findById(id)
+    book: Book.findById(id),
+    types: BookType.all(),
+    reservations:BookReservation.find({book_id:id}).sort({reservation_date:1})
   })
   .then(function(product){
     if(product.book){
-      var stat = product.statistics_info;
+      var stat = product.statistics_info,
+          book = product.book,
+          reservations = product.reservations,
+          type = _.indexBy(product.types,'name')[book.type];
+      //可预约的情况 ＝ 图书可用数 － 当前预约队列 > 固定的阈值
+      product.reservable = (book.availables - reservations.length)> type.reservation_threshold ? false : true;
       product.marked = product.marked || (stat && stat.mark_count) || 0;
       product.viewed = product.viewed || (stat && stat.view_count) || 0;
       product.replied = product.replied || (stat && stat.mark_count) || 0;
+
+      delete product.types;
+      
       Book.incrViewCount(id,1,product.viewed);
       res.render('book/show',product);
     }else{

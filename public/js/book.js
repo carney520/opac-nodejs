@@ -17,10 +17,11 @@ $(document).ready(function(){
 
   var showWindow = function(content,callback,context){
     var $window = $('#window'),
-        $windowContent = $('#window .window-content');
-        $windowConfirm = $('#window #window-confirm');
+        $windowContent = $('#window .window-content'),
+        $windowConfirm = $('#window #window-confirm'),
         $windowMessage = $('#window .window-message');
-
+    callback = callback || function(){};
+        
     $windowMessage.html('');
     if(typeof content === "string"){
       //显示提示消息
@@ -60,6 +61,76 @@ $(document).ready(function(){
   var userid = $('meta[name="user-id"]').attr('content'),
       bookid = $('meta[name="book-id"]').attr('content'),
       bookname = $('meta[name="book-name"]').attr('content');
+
+  //检查是否已经预约
+  var $reservateButton = $('#reservate');
+  if(userid && $reservateButton.length === 1){
+    $reservateButton.html(waiting());
+    $.ajax({
+      url: userTemplateforTag.urlFor('book_reservation',bookid,userid),
+      method:'GET'
+    })
+    .done(function(data){
+      $reservateButton.html('取消预约').data('reservated',true);
+    })
+    .fail(function(jqxhr,code,err){
+      if(jqxhr.status === 404){
+        $reservateButton.html('预约');
+      }else{
+        $reservateButton.html('获取预约信息失败');
+      }
+    });
+  }
+
+  $reservateButton.click(function(event){
+    var $this = $(this),
+        isReservated = $this.data('reservated');
+    if(!userid){
+      return loginFirst();
+    }
+    $this.html(waiting());
+    if(isReservated){
+      //取消预约
+      $.ajax({
+        url: userTemplateforTag.urlFor('book_reservation',bookid,userid),
+        method:'DELETE',
+        processData:false,
+        data:{}
+      })
+      .done(function(data){
+        $this.html('预约').data('reservated',false);
+      })
+      .fail(function(jqxhr,code,err){
+        $this.html('取消预约');
+        message('danger','取消预约失败' + code + ': ' +err);
+      });
+    }else{
+      //预约
+      $.ajax({
+        url: userTemplateforTag.urlFor('book_reservations',bookid),
+        method:'POST',
+        processData:false,
+        data:{
+          user_id:userid
+        }
+      })
+      .done(function(data){
+        $this.html('取消预约').data('reservated',true);
+        message('success','预约成功: 当前等待人数为 '+ data.queue +'人');
+      })
+      .fail(function(jqxhr,code,err){
+        var status = jqxhr.status;
+        if(status === 409){
+          $this.html('取消预约').data('reservated',true);
+        }else if(status === 406){
+          $this.html('无需预约');
+        }else{
+          $this.html('预约失败');
+          message('danger','预约失败'+code +': '+ err);
+        }
+      });
+    }
+  });
 
   //检查是否已经收藏
   if(userid){
@@ -539,6 +610,10 @@ $(document).ready(function(){
             })
             .done(function(data){
               $this.html('借出').data('method','lent_out');
+              if(data.reserved){
+                //该书被预约，通知管理员放入预约书架
+                showWindow('该图书已经被预约！');
+              }
             })
             .fail(function(jqxhr,code,err){
               var status = jqxhr.status,

@@ -104,6 +104,27 @@ block content
                 button.lent_out(data-accession_no=collection.accession_no,data-book_id=book.id,data-method= collection.status === 'lent_out' ? 'return' : 'lent_out')
                   |#{collection.status === 'lent_out' ? '归还' :'借出'}
 
+  if is_admin || is_super
+    .book-item
+      .book-item-title
+        |该书的预约队列
+      .book-item-body
+        table.table.table-bordered
+          tr 
+            th #
+            th 读者
+            th 状态
+            th 失效时间
+          each reservation,index in reservations
+            tr
+              td ##{index+1}
+              td 
+                a(href=url_for('user',reservation.user_id)) 
+                  |#{reservation.user_name}
+              td #{reservation.book_available ? '等待取书' : '排队中'}
+              td #{reservation.book_available ? dateFormat(reservation.latest_loan_date) : 'n/a'}
+        
+
   //-评论
   .book-item
     .book-item-title
@@ -139,7 +160,8 @@ block sidebar
     .book-sub-item-title
       |读者可操作项
     .book-sub-item-body.clearfix
-      .book-btn 预约
+      if reservable
+        .book-btn#reservate 预约
       .book-btn#favor 收藏
       .book-btn 
         a(href='#book-comments') 评价
@@ -152,6 +174,7 @@ block sidebar
         each tag in book.tags
           span.book-tag-item 
             a(href=url_for('book_search',{query:{tags:tag}})) #{tag}
+
 
 block hidden
   #window.window-hidden

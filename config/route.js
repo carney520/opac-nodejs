@@ -251,7 +251,8 @@ module.exports = function(app){
   var userController = main.user,
       tagController = main.tag,
       bookController = main.book,
-      commentController = main.comment;
+      commentController = main.comment,
+      reservationController = main.reservation;
 
   user = app.register(main_prefix,'users');
   user.route('/:card_no')
@@ -285,15 +286,16 @@ module.exports = function(app){
   book.delete('/:id/comments/:reply_no',commentController.destroy);
   book.post('/:id/comments/:reply_no/likes',commentController.like); //赞
   book.delete('/:id/comments/:reply_no/likes/:card_no',commentController.undo_like); //取消赞
+  /*预约*/
+  book.post('/:id/reservations',reservationController.create);    //创建一个预约
+  book.route('/:id/reservations/:card_no')
+    .get(reservationController.show)                           //查看是否已经预约,返回排队顺序
+    .delete(reservationController.destroy);                        //取消预约
 
   //杂项
   var misc = app.register('/','misc',true);
 
   misc.get('/rules');                      //借阅规则
-  var test = app.register('/','tests');
-  test.get('/',intlBookBorrowedController.create);
-  test.get('/return',intlBookBorrowedController.destroy);
-
 
   console.log(admins.p);
 
