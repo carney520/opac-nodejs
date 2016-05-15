@@ -20,7 +20,7 @@
  *
  */
 
-var paths = require('path'),
+var paths = require('path').posix,
     pluralize = require('pluralize'),
     express = require('express'),
     _ = require('underscore'),
