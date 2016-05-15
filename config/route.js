@@ -296,6 +296,7 @@ module.exports = function(app){
   var misc = app.register('/','misc',true);
 
   misc.get('/rules');                      //借阅规则
+  misc.get('/sitemap',main.sitemap);
 
   console.log(admins.p);
 

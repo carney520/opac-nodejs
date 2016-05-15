@@ -3,15 +3,17 @@
        role        角色
 
 extends ./layouts/basic.jade
+-var rolemap = {'reader':'读者','admin':'管理员','super':'系统管理员'}
+-var role = role || 'reader';
 block title
-  |用户登录
+  //-|#{rolemap[role]}用户登录
 block body
   .container
     .login-panel
       .login-logo-wrap
         .login-logo OPAC
       .login-welcome-speech
-        h3 登录OPAC
+        h3 登录
       .login-alert
         -var message = flash.shift()
         if message

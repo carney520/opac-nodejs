@@ -125,7 +125,10 @@ exports.authentication = function(req,res,next){
         )(req,res,next);
 };
 
-
+//杂项
+exports.sitemap = function(req,res,next){
+  res.render('sitemap');
+};
 //控制器
 exports.user = require('./user');
 exports.tag = require('./tag');

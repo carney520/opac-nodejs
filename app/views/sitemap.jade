@@ -1,0 +1,8 @@
+extends ./layouts/index.jade
+block title
+  |#{网站索引}
+block content
+  ul
+    li: a(href=url_for("system")) 系统管理入口
+    li: a(href=url_for("library")) 图书管理员入口
+    li: a(href=url_for("main")) 首页
