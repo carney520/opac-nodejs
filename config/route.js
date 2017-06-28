@@ -1,4 +1,4 @@
-/*define routes */
+/* define routes */
 var url_for = require('../middlewares/url_for')
 var controllers = require('../app/controllers/index')
 
@@ -117,13 +117,13 @@ module.exports = function(app) {
 
   /*
    * @resource: categories
-   * @path: 
+   * @path:
    *      /system/categories/ GET   manage book categories
-   *      /system/categories/ POST  add one category 
-   *      /system/categories/:id PUT  update one category 
-   *      /system/categories/:id POST  add one sub-category 
-   *      /system/categories/:id DELETE  delete category 
-   *      /system/categories/:id/children/:child_name DELETE  delete sub-category 
+   *      /system/categories/ POST  add one category
+   *      /system/categories/:id PUT  update one category
+   *      /system/categories/:id POST  add one sub-category
+   *      /system/categories/:id DELETE  delete category
+   *      /system/categories/:id/children/:child_name DELETE  delete sub-category
    */
 
   var categories = app.register(system_prefix, 'categories'),
@@ -312,8 +312,6 @@ module.exports = function(app) {
 
   misc.get('/rules') //借阅规则
   misc.get('/sitemap', main.sitemap)
-
-  console.log(admins.p)
 
   //Error handlers
   app.use(controllers.errorHandlers)
