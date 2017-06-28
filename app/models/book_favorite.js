@@ -2,7 +2,7 @@ var mg = require('mongoose');
 var Schema = mg.Schema;
 
 var bookFavoriteSchema = new Schema({
-  _id:{type:String,unique:true,require:true},
+  _id:{type:String,require:true},
   user_id:{type:String,index:true,required:true}, //用户的card_no
   book_id:{type:Schema.Types.ObjectId,index:true,required:true},
   name:{type:String,required:true},
