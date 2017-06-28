@@ -1,7 +1,7 @@
 var models = require('../../models/index'),
-    Composition = models.Composition,
-    _ = require('underscore'),
-    Promise = require('bluebird');
+  Composition = models.Composition,
+  _ = require('underscore'),
+  Promise = require('bluebird')
 
 /*
  * 复合资源:
@@ -12,24 +12,23 @@ var models = require('../../models/index'),
  *    新书
  */
 
-exports.index = function(req,res,next){
+exports.index = function(req, res, next) {
   Promise.props({
-    week:Composition.getMostSearched('week'),
-    month:Composition.getMostSearched('month'),
+    week: Composition.getMostSearched('week'),
+    month: Composition.getMostSearched('month'),
     most_favored: Composition.getMostFavored(),
     most_hot: Composition.getMostHot(),
     most_borrow: Composition.getMostBorrow(),
-    new_releases: Composition.getNewReleases()
+    new_releases: Composition.getNewReleases(),
   })
-  .then(function(results){
-    _.forEach(results,function(value,key){
-      if(_.includes(['week','month'],key))
-        return;
-      results[key] = _.head(value,20);
-    });
-    res.render('index',results);
-  })
-  .catch(function(err){
-    next(err);
-  });
-};
+    .then(function(results) {
+      _.forEach(results, function(value, key) {
+        if (_.includes(['week', 'month'], key)) return
+        results[key] = _.head(value, 20)
+      })
+      res.render('index', results)
+    })
+    .catch(function(err) {
+      next(err)
+    })
+}

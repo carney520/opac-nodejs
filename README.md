@@ -30,3 +30,17 @@ npm run initdb
 ```
 npm run dev
 ```
+
+生产环境运行:
+```
+npm run start
+```
+
+pm2:
+```
+npm run pm2-dev // 开发环境
+npm run pm2     // 生产环境
+```
+现在可以打开`http://localhost:3000`查看运行效果.
+
+## 项目结构

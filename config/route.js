@@ -1,9 +1,9 @@
 /*define routes */
-var url_for = require('../middlewares/url_for');
-var controllers = require('../app/controllers/index');
+var url_for = require('../middlewares/url_for')
+var controllers = require('../app/controllers/index')
 
-module.exports = function(app){
-  app.use(url_for);
+module.exports = function(app) {
+  app.use(url_for)
   /*
    * TODO
    * /books
@@ -13,61 +13,56 @@ module.exports = function(app){
    * /system/readers
    */
 
-
   /*
    * @subsystem: 系统管理
    * @prefix: /system
    */
 
   var system = controllers.system,
-      system_prefix = system.prefix;
-  app.use(system_prefix,system.before);
+    system_prefix = system.prefix
+  app.use(system_prefix, system.before)
 
-  var system_index = app.register('/',system_prefix);
-  system_index.get('/',system.index);
-  system_index.route('/login')
-    .get(system.login)
-    .post(system.authentication);
+  var system_index = app.register('/', system_prefix)
+  system_index.get('/', system.index)
+  system_index.route('/login').get(system.login).post(system.authentication)
 
   /*
    * @resource Readers
    * @path:
    */
 
-  var readers = app.register(system_prefix,'readers'),
-      readerController = system.reader;
+  var readers = app.register(system_prefix, 'readers'),
+    readerController = system.reader
 
   //app.use('/readers',readers);
-  readers.use(readerController.before);
-  readers.route('/')
-    .get(readerController.index)
-    .post(readerController.create);
-  readers.get('/new',readerController.new);
-  readers.route('/:card_no')
+  readers.use(readerController.before)
+  readers.route('/').get(readerController.index).post(readerController.create)
+  readers.get('/new', readerController.new)
+  readers
+    .route('/:card_no')
     .get(readerController.show)
     .put(readerController.update)
-    .delete(readerController.destroy);
-  readers.get('/:card_no/edit',readerController.edit);
-  readers.put('/:card_no/status',readerController.update_status);
+    .delete(readerController.destroy)
+  readers.get('/:card_no/edit', readerController.edit)
+  readers.put('/:card_no/status', readerController.update_status)
 
   /*
    * @resource Admins
    * @path:
    *
    */
-  var admins = app.register(system_prefix,'admins'),
-      adminController = system.admin;
-  
-  admins.use(adminController.before);
-  admins.route('/')
-    .get(adminController.index)
-    .post(adminController.create);
-  admins.get('/new',adminController.new);
-  admins.route('/:card_no')
+  var admins = app.register(system_prefix, 'admins'),
+    adminController = system.admin
+
+  admins.use(adminController.before)
+  admins.route('/').get(adminController.index).post(adminController.create)
+  admins.get('/new', adminController.new)
+  admins
+    .route('/:card_no')
     .get(adminController.show)
     .put(adminController.update)
-    .delete(adminController.destroy);
-  admins.get('/:card_no/edit',adminController.edit);
+    .delete(adminController.destroy)
+  admins.get('/:card_no/edit', adminController.edit)
 
   /*
    * @resource Rules
@@ -80,18 +75,17 @@ module.exports = function(app){
    *                         DELETE delete rule
    *       /system/rules/:id/edit GET page to modify rule
    */
-  var rules = app.register(system_prefix,'rules'),
-      ruleController = system.rule;
-  rules.use(ruleController.before);
-  rules.route('/')
-    .get(ruleController.index)
-    .post(ruleController.create);
-  rules.get('/new',ruleController.new);
-  rules.route('/:id')
+  var rules = app.register(system_prefix, 'rules'),
+    ruleController = system.rule
+  rules.use(ruleController.before)
+  rules.route('/').get(ruleController.index).post(ruleController.create)
+  rules.get('/new', ruleController.new)
+  rules
+    .route('/:id')
     .get(ruleController.show)
     .put(ruleController.update)
-    .delete(ruleController.destroy);
-  rules.get('/:id/edit',ruleController.edit);
+    .delete(ruleController.destroy)
+  rules.get('/:id/edit', ruleController.edit)
 
   /*
    * @resource CollectionSite 借阅室or藏书位置
@@ -105,19 +99,21 @@ module.exports = function(app){
    *       /system/collection_sites/:id/edit GET page to mofify collection site
    */
 
-  var collection_sites = app.register(system_prefix,'collection_sites'),
-      collectionSiteController = system.collectionSite;
+  var collection_sites = app.register(system_prefix, 'collection_sites'),
+    collectionSiteController = system.collectionSite
 
-  collection_sites.use(collectionSiteController.before);
-  collection_sites.route('/')
+  collection_sites.use(collectionSiteController.before)
+  collection_sites
+    .route('/')
     .get(collectionSiteController.index)
-    .post(collectionSiteController.create);
-  collection_sites.get('/new',collectionSiteController.new);
-  collection_sites.route('/:id')
+    .post(collectionSiteController.create)
+  collection_sites.get('/new', collectionSiteController.new)
+  collection_sites
+    .route('/:id')
     .get(collectionSiteController.show)
     .put(collectionSiteController.update)
-    .delete(collectionSiteController.destroy);
-  collection_sites.get('/:id/edit',collectionSiteController.edit);
+    .delete(collectionSiteController.destroy)
+  collection_sites.get('/:id/edit', collectionSiteController.edit)
 
   /*
    * @resource: categories
@@ -130,18 +126,23 @@ module.exports = function(app){
    *      /system/categories/:id/children/:child_name DELETE  delete sub-category 
    */
 
-  var categories = app.register(system_prefix,'categories'),
-      categoryController = system.category;
+  var categories = app.register(system_prefix, 'categories'),
+    categoryController = system.category
 
-  categories.use(collectionSiteController.before);
-  categories.route('/')
+  categories.use(collectionSiteController.before)
+  categories
+    .route('/')
     .get(categoryController.index)
-    .post(categoryController.create);
-  categories.route('/:id')
+    .post(categoryController.create)
+  categories
+    .route('/:id')
     .put(categoryController.update)
     .post(categoryController.create_child)
-    .delete(categoryController.destroy);
-  categories.delete('/:id/children/:child_name',categoryController.destroy_child);
+    .delete(categoryController.destroy)
+  categories.delete(
+    '/:id/children/:child_name',
+    categoryController.destroy_child
+  )
 
   /*
    * @subsystem: 图书管理
@@ -151,13 +152,11 @@ module.exports = function(app){
    */
 
   var library = controllers.library,
-      library_prefix = library.prefix;
-  app.use(library_prefix,library.before);
-  var library_index = app.register('/',library_prefix);
-  library_index.get('/',library.index);
-  library_index.route('/login')
-    .get(library.login)
-    .post(library.authentication);
+    library_prefix = library.prefix
+  app.use(library_prefix, library.before)
+  var library_index = app.register('/', library_prefix)
+  library_index.get('/', library.index)
+  library_index.route('/login').get(library.login).post(library.authentication)
 
   /*
    * @resource: Book
@@ -177,36 +176,50 @@ module.exports = function(app){
    *                                            GET  获取
    */
 
-  var intl_books = app.register('/library','intl_books'),
-      intlBookController = library.book,
-      intlBookCollectionController = library.collection,
-      intlBookBorrowedController = library.borrowed;
+  var intl_books = app.register('/library', 'intl_books'),
+    intlBookController = library.book,
+    intlBookCollectionController = library.collection,
+    intlBookBorrowedController = library.borrowed
 
-  intl_books.use(intlBookController.before);
-  intl_books.route('/')
+  intl_books.use(intlBookController.before)
+  intl_books
+    .route('/')
     .get(intlBookController.index)
-    .post(intlBookController.create);
-  intl_books.get('/new',intlBookController.new);
-  intl_books.get('/search',intlBookController.search);
-  intl_books.route('/:id')
+    .post(intlBookController.create)
+  intl_books.get('/new', intlBookController.new)
+  intl_books.get('/search', intlBookController.search)
+  intl_books
+    .route('/:id')
     .get(intlBookController.show)
     .put(intlBookController.update)
-    .delete(intlBookController.destroy);
-  intl_books.get('/:id/edit',intlBookController.edit);
+    .delete(intlBookController.destroy)
+  intl_books.get('/:id/edit', intlBookController.edit)
 
-  intl_books.route('/:id/collections','collections')
+  intl_books
+    .route('/:id/collections', 'collections')
     .get(intlBookCollectionController.index)
-    .post(intlBookCollectionController.create);
-  intl_books.get('/:id/collections/new','collection_new',intlBookCollectionController.new);
-  intl_books.route('/:id/collections/:collection_id','collection')
+    .post(intlBookCollectionController.create)
+  intl_books.get(
+    '/:id/collections/new',
+    'collection_new',
+    intlBookCollectionController.new
+  )
+  intl_books
+    .route('/:id/collections/:collection_id', 'collection')
     .get(intlBookCollectionController.show)
     .put(intlBookCollectionController.update)
-    .delete(intlBookCollectionController.destroy);
-  intl_books.get('/:id/collections/:collection_id/edit','collection_edit',intlBookCollectionController.edit);
+    .delete(intlBookCollectionController.destroy)
+  intl_books.get(
+    '/:id/collections/:collection_id/edit',
+    'collection_edit',
+    intlBookCollectionController.edit
+  )
 
-  intl_books.post('/borroweds',intlBookBorrowedController.create);             //借书
-  intl_books.delete('/borroweds/:accession_no',intlBookBorrowedController.destroy);      //还书
-
+  intl_books.post('/borroweds', intlBookBorrowedController.create) //借书
+  intl_books.delete(
+    '/borroweds/:accession_no',
+    intlBookBorrowedController.destroy
+  ) //还书
 
   /*
    *
@@ -233,73 +246,75 @@ module.exports = function(app){
    */
 
   var main = controllers.main,
-      main_prefix = main.prefix;
-  app.use(main_prefix,main.before);
+    main_prefix = main.prefix
+  app.use(main_prefix, main.before)
 
-  var main_index = app.register(main_prefix,'main',true);
-  main_index.get('/',main.index);
-  main_index.get('/logout',main.logout);
-  main_index.route('/login')
-    .get(main.login)
-    .post(main.authentication);
-
+  var main_index = app.register(main_prefix, 'main', true)
+  main_index.get('/', main.index)
+  main_index.get('/logout', main.logout)
+  main_index.route('/login').get(main.login).post(main.authentication)
 
   /*
    * @resource users
    *           读者资料
    */
   var userController = main.user,
-      tagController = main.tag,
-      bookController = main.book,
-      commentController = main.comment,
-      reservationController = main.reservation;
+    tagController = main.tag,
+    bookController = main.book,
+    commentController = main.comment,
+    reservationController = main.reservation
 
-  user = app.register(main_prefix,'users');
-  user.route('/:card_no')
-    .get(userController.show)
-    .put(userController.update);
-  user.put('/:card_no/password',userController.change_password);
+  user = app.register(main_prefix, 'users')
+  user.route('/:card_no').get(userController.show).put(userController.update)
+  user.put('/:card_no/password', userController.change_password)
   /*借阅*/
-  user.get('/:card_no/borroweds',userController.get_borrowed);
-  user.put('/:card_no/borroweds/:accession_no',userController.renew);
+  user.get('/:card_no/borroweds', userController.get_borrowed)
+  user.put('/:card_no/borroweds/:accession_no', userController.renew)
 
   /*图书收藏*/
-  user.route('/:card_no/books')
+  user
+    .route('/:card_no/books')
     .get(tagController.index)
-    .post(tagController.create);           //收藏图书
-  user.route('/:card_no/books/:book_id')
+    .post(tagController.create) //收藏图书
+  user
+    .route('/:card_no/books/:book_id')
     .delete(tagController.destroy)
-    .get(tagController.is_collected); //是否收藏了图书 
-  user.route('/:card_no/tags')
-    .get(tagController.tags);            //获取所有标签
-  user.route('/:card_no/tags/:tag_name')  //获取指定标签的图书集合
-    .get(tagController.show);
+    .get(tagController.is_collected) //是否收藏了图书
+  user.route('/:card_no/tags').get(tagController.tags) //获取所有标签
+  user
+    .route('/:card_no/tags/:tag_name') //获取指定标签的图书集合
+    .get(tagController.show)
 
-  var book = app.register('/','books');
-  book.get('/',bookController.index);
-  book.get('/search',bookController.search);
-  book.get('/:id',bookController.show);
+  var book = app.register('/', 'books')
+  book.get('/', bookController.index)
+  book.get('/search', bookController.search)
+  book.get('/:id', bookController.show)
   /*图书评论*/
-  book.route('/:id/comments')
-    .post(commentController.create)  //新建一条回复
-    .get(commentController.index);
-  book.delete('/:id/comments/:reply_no',commentController.destroy);
-  book.post('/:id/comments/:reply_no/likes',commentController.like); //赞
-  book.delete('/:id/comments/:reply_no/likes/:card_no',commentController.undo_like); //取消赞
+  book
+    .route('/:id/comments')
+    .post(commentController.create) //新建一条回复
+    .get(commentController.index)
+  book.delete('/:id/comments/:reply_no', commentController.destroy)
+  book.post('/:id/comments/:reply_no/likes', commentController.like) //赞
+  book.delete(
+    '/:id/comments/:reply_no/likes/:card_no',
+    commentController.undo_like
+  ) //取消赞
   /*预约*/
-  book.post('/:id/reservations',reservationController.create);    //创建一个预约
-  book.route('/:id/reservations/:card_no')
-    .get(reservationController.show)                           //查看是否已经预约,返回排队顺序
-    .delete(reservationController.destroy);                        //取消预约
+  book.post('/:id/reservations', reservationController.create) //创建一个预约
+  book
+    .route('/:id/reservations/:card_no')
+    .get(reservationController.show) //查看是否已经预约,返回排队顺序
+    .delete(reservationController.destroy) //取消预约
 
   //杂项
-  var misc = app.register('/','misc',true);
+  var misc = app.register('/', 'misc', true)
 
-  misc.get('/rules');                      //借阅规则
-  misc.get('/sitemap',main.sitemap);
+  misc.get('/rules') //借阅规则
+  misc.get('/sitemap', main.sitemap)
 
-  console.log(admins.p);
+  console.log(admins.p)
 
   //Error handlers
-  app.use(controllers.errorHandlers);
-};
+  app.use(controllers.errorHandlers)
+}

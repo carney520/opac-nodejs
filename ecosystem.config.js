@@ -5,19 +5,19 @@ module.exports = {
    */
   apps: [
     {
-      name: 'opac-nodejs',
-      script: './bin/run',
+      name: "opac-nodejs",
+      script: "./bin/run",
       instances: 0,
-      exec_mode: 'cluster',
+      exec_mode: "cluster",
       env: {
         watch: true,
-        NODE_ENV: 'development',
-        PORT: '3000'
+        NODE_ENV: "development",
+        PORT: "3000",
       },
       env_production: {
-        NODE_ENV: 'production',
-        PORT: '3000'
-      }
-    }
+        NODE_ENV: "production",
+        PORT: "3000",
+      },
+    },
   ],
 }
